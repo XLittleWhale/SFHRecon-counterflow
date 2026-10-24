@@ -1,0 +1,836 @@
+{
+  "latent_candidates": [
+    {
+      "kind": "identity",
+      "parameters": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "validation_NLL": -4.077434549835026,
+      "fit": {
+        "steps": 0,
+        "reason": "identity_baseline"
+      }
+    },
+    {
+      "kind": "global",
+      "parameters": [
+        -0.3328687112952333,
+        0.0,
+        -0.008420972428742537
+      ],
+      "validation_NLL": -3.265486982441954,
+      "fit": {
+        "steps": 173,
+        "reason": "training_objective_plateau_or_small_gradient",
+        "trace": [
+          {
+            "step": 0,
+            "loss": -5.719366600227167,
+            "gradient": 0.9721294077077737
+          },
+          {
+            "step": 50,
+            "loss": -5.898911537546367,
+            "gradient": 0.01979046864604603
+          },
+          {
+            "step": 100,
+            "loss": -5.898956250527482,
+            "gradient": 0.005604875323384343
+          },
+          {
+            "step": 150,
+            "loss": -5.898960175248454,
+            "gradient": 0.0002757760478375882
+          }
+        ]
+      }
+    },
+    {
+      "kind": "log_speed",
+      "parameters": [
+        -0.23879337310893048,
+        0.8277522294842415,
+        -0.008515533789813581
+      ],
+      "validation_NLL": -4.186043097849005,
+      "fit": {
+        "steps": 254,
+        "reason": "training_objective_plateau_or_small_gradient",
+        "trace": [
+          {
+            "step": 0,
+            "loss": -5.719366600227167,
+            "gradient": 1.6846333821354287
+          },
+          {
+            "step": 50,
+            "loss": -6.658651226068526,
+            "gradient": 0.1061893551703454
+          },
+          {
+            "step": 100,
+            "loss": -6.663404989763175,
+            "gradient": 0.08424677125244946
+          },
+          {
+            "step": 150,
+            "loss": -6.663404338428787,
+            "gradient": 0.0802912291691109
+          },
+          {
+            "step": 200,
+            "loss": -6.662900587212001,
+            "gradient": 0.09178794173785172
+          },
+          {
+            "step": 250,
+            "loss": -6.662832156291076,
+            "gradient": 0.09534564934562394
+          }
+        ]
+      }
+    }
+  ],
+  "selected_latent": "log_speed",
+  "noise": [
+    {
+      "K": 2,
+      "state": "captured",
+      "candidates": [
+        {
+          "kind": "original",
+          "parameters": [
+            -1.2039728043259361,
+            0.0
+          ],
+          "validation_NLL": 0.10309303451278633,
+          "fit": {
+            "steps": 0,
+            "reason": "original_noise_baseline"
+          }
+        },
+        {
+          "kind": "global",
+          "parameters": [
+            -1.8728193077031494,
+            0.0
+          ],
+          "validation_NLL": 0.5238165085517448,
+          "fit": {
+            "steps": 179,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.2703469609888199,
+                "gradient": 1.4135457010845527
+              },
+              {
+                "step": 50,
+                "loss": -0.8288164572340396,
+                "gradient": 0.04647874286056186
+              },
+              {
+                "step": 100,
+                "loss": -0.8291262259860945,
+                "gradient": 0.0009778194002333096
+              },
+              {
+                "step": 150,
+                "loss": -0.8291262495882487,
+                "gradient": 0.0008909475126027688
+              }
+            ]
+          }
+        },
+        {
+          "kind": "log_speed",
+          "parameters": [
+            -1.7493426692944076,
+            0.5272050323901132
+          ],
+          "validation_NLL": 0.03373038738849264,
+          "fit": {
+            "steps": 190,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.2703469609888199,
+                "gradient": 1.788999713509775
+              },
+              {
+                "step": 50,
+                "loss": -1.0818698720474553,
+                "gradient": 0.12482934628162852
+              },
+              {
+                "step": 100,
+                "loss": -1.083924852631644,
+                "gradient": 0.011072590713604894
+              },
+              {
+                "step": 150,
+                "loss": -1.083940789909694,
+                "gradient": 0.0010408034352936578
+              }
+            ]
+          }
+        }
+      ],
+      "selected": "log_speed"
+    },
+    {
+      "K": 2,
+      "state": "free",
+      "candidates": [
+        {
+          "kind": "original",
+          "parameters": [
+            -1.2039728043259361,
+            0.0
+          ],
+          "validation_NLL": 0.03875027740653214,
+          "fit": {
+            "steps": 0,
+            "reason": "original_noise_baseline"
+          }
+        },
+        {
+          "kind": "global",
+          "parameters": [
+            -1.8602430131484513,
+            0.0
+          ],
+          "validation_NLL": 0.3795188008791539,
+          "fit": {
+            "steps": 189,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.30092317643441957,
+                "gradient": 1.4617092683837851
+              },
+              {
+                "step": 50,
+                "loss": -0.8825711481840699,
+                "gradient": 0.0028942273879331015
+              },
+              {
+                "step": 100,
+                "loss": -0.882562121119529,
+                "gradient": 0.008963488811216488
+              },
+              {
+                "step": 150,
+                "loss": -0.882572170696445,
+                "gradient": 0.00043399708060072595
+              }
+            ]
+          }
+        },
+        {
+          "kind": "log_speed",
+          "parameters": [
+            -1.7423345549565943,
+            0.46222552206500833
+          ],
+          "validation_NLL": -0.057242590809544386,
+          "fit": {
+            "steps": 210,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.30092317643441957,
+                "gradient": 1.8484319817950816
+              },
+              {
+                "step": 50,
+                "loss": -1.1620552244456936,
+                "gradient": 0.1750816878201577
+              },
+              {
+                "step": 100,
+                "loss": -1.1648925551834288,
+                "gradient": 0.010411861056431968
+              },
+              {
+                "step": 150,
+                "loss": -1.1649010338151615,
+                "gradient": 0.0012340565551921506
+              },
+              {
+                "step": 200,
+                "loss": -1.1649011586527795,
+                "gradient": 7.633840592825717e-05
+              }
+            ]
+          }
+        }
+      ],
+      "selected": "log_speed"
+    },
+    {
+      "K": 4,
+      "state": "captured",
+      "candidates": [
+        {
+          "kind": "original",
+          "parameters": [
+            -1.2039728043259361,
+            0.0
+          ],
+          "validation_NLL": -0.2543202031910306,
+          "fit": {
+            "steps": 0,
+            "reason": "original_noise_baseline"
+          }
+        },
+        {
+          "kind": "global",
+          "parameters": [
+            -2.129406745213735,
+            0.0
+          ],
+          "validation_NLL": -0.5913058958103599,
+          "fit": {
+            "steps": 194,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.37807934511470476,
+                "gradient": 1.6234386314328175
+              },
+              {
+                "step": 50,
+                "loss": -1.3003482574609788,
+                "gradient": 0.23082626374038295
+              },
+              {
+                "step": 100,
+                "loss": -1.3081413539860531,
+                "gradient": 0.006454607180847338
+              },
+              {
+                "step": 150,
+                "loss": -1.3081477607885288,
+                "gradient": 0.00045096975837422004
+              }
+            ]
+          }
+        },
+        {
+          "kind": "log_speed",
+          "parameters": [
+            -2.002741441283492,
+            0.4689727075872566
+          ],
+          "validation_NLL": -0.7606105280874422,
+          "fit": {
+            "steps": 229,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.37807934511470476,
+                "gradient": 1.9422103040794114
+              },
+              {
+                "step": 50,
+                "loss": -1.4850690790232806,
+                "gradient": 0.07724568021591538
+              },
+              {
+                "step": 100,
+                "loss": -1.4865088310284182,
+                "gradient": 0.0013214862330171253
+              },
+              {
+                "step": 150,
+                "loss": -1.4865088132328927,
+                "gradient": 0.0011962624053932598
+              },
+              {
+                "step": 200,
+                "loss": -1.4865090842807487,
+                "gradient": 6.593611629787885e-05
+              }
+            ]
+          }
+        }
+      ],
+      "selected": "log_speed"
+    },
+    {
+      "K": 4,
+      "state": "free",
+      "candidates": [
+        {
+          "kind": "original",
+          "parameters": [
+            -1.2039728043259361,
+            0.0
+          ],
+          "validation_NLL": -0.13756800450976645,
+          "fit": {
+            "steps": 0,
+            "reason": "original_noise_baseline"
+          }
+        },
+        {
+          "kind": "global",
+          "parameters": [
+            -2.1618422813470635,
+            0.0
+          ],
+          "validation_NLL": 0.4517170768096166,
+          "fit": {
+            "steps": 186,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.4228246233940961,
+                "gradient": 1.7055121623031375
+              },
+              {
+                "step": 50,
+                "loss": -1.4754436440097376,
+                "gradient": 0.30079023467576926
+              },
+              {
+                "step": 100,
+                "loss": -1.485700140877215,
+                "gradient": 0.01633087446197759
+              },
+              {
+                "step": 150,
+                "loss": -1.485732985217749,
+                "gradient": 0.001581482359110764
+              }
+            ]
+          }
+        },
+        {
+          "kind": "log_speed",
+          "parameters": [
+            -2.030511229023677,
+            0.5533900445402612
+          ],
+          "validation_NLL": -0.36589661786040584,
+          "fit": {
+            "steps": 224,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.4228246233940961,
+                "gradient": 2.051019940304709
+              },
+              {
+                "step": 50,
+                "loss": -1.8389566775392594,
+                "gradient": 0.21449687721305308
+              },
+              {
+                "step": 100,
+                "loss": -1.8430047925501383,
+                "gradient": 0.010215826008128858
+              },
+              {
+                "step": 150,
+                "loss": -1.843015476062069,
+                "gradient": 0.0006319931779285589
+              },
+              {
+                "step": 200,
+                "loss": -1.843015559752044,
+                "gradient": 0.0001226800102043896
+              }
+            ]
+          }
+        }
+      ],
+      "selected": "log_speed"
+    },
+    {
+      "K": 8,
+      "state": "captured",
+      "candidates": [
+        {
+          "kind": "original",
+          "parameters": [
+            -1.2039728043259361,
+            0.0
+          ],
+          "validation_NLL": -0.37629536765888194,
+          "fit": {
+            "steps": 0,
+            "reason": "original_noise_baseline"
+          }
+        },
+        {
+          "kind": "global",
+          "parameters": [
+            -2.3457617049195942,
+            0.0
+          ],
+          "validation_NLL": -1.194573088893253,
+          "fit": {
+            "steps": 145,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.43203973466724654,
+                "gradient": 1.7294029818943712
+              },
+              {
+                "step": 50,
+                "loss": -1.6848088883187773,
+                "gradient": 0.089862665444424
+              },
+              {
+                "step": 100,
+                "loss": -1.6860582369157895,
+                "gradient": 0.02434759737173242
+              }
+            ]
+          }
+        },
+        {
+          "kind": "log_speed",
+          "parameters": [
+            -2.2166871005479747,
+            0.43724604835116226
+          ],
+          "validation_NLL": -1.2702359424407144,
+          "fit": {
+            "steps": 236,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.43203973466724654,
+                "gradient": 2.0320501835088582
+              },
+              {
+                "step": 50,
+                "loss": -1.8096745524331967,
+                "gradient": 0.21629741836658703
+              },
+              {
+                "step": 100,
+                "loss": -1.825433464590946,
+                "gradient": 0.02308300292516039
+              },
+              {
+                "step": 150,
+                "loss": -1.8255266550931968,
+                "gradient": 0.0010583413315224356
+              },
+              {
+                "step": 200,
+                "loss": -1.8255268773076767,
+                "gradient": 7.685495605463746e-05
+              }
+            ]
+          }
+        }
+      ],
+      "selected": "log_speed"
+    },
+    {
+      "K": 8,
+      "state": "free",
+      "candidates": [
+        {
+          "kind": "original",
+          "parameters": [
+            -1.2039728043259361,
+            0.0
+          ],
+          "validation_NLL": -0.2666311058935039,
+          "fit": {
+            "steps": 0,
+            "reason": "original_noise_baseline"
+          }
+        },
+        {
+          "kind": "global",
+          "parameters": [
+            -2.543574517510359,
+            0.0
+          ],
+          "validation_NLL": 1.1728673870363684,
+          "fit": {
+            "steps": 196,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.5014496545274996,
+                "gradient": 1.862762224569945
+              },
+              {
+                "step": 50,
+                "loss": -2.2471655857898436,
+                "gradient": 0.12654638169886476
+              },
+              {
+                "step": 100,
+                "loss": -2.249012455538453,
+                "gradient": 0.0438154540948357
+              },
+              {
+                "step": 150,
+                "loss": -2.249255386162225,
+                "gradient": 0.002203013478820598
+              }
+            ]
+          }
+        },
+        {
+          "kind": "log_speed",
+          "parameters": [
+            -2.3895924963774537,
+            0.7738324632024692
+          ],
+          "validation_NLL": -0.6568592290545466,
+          "fit": {
+            "steps": 212,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.5014496545274996,
+                "gradient": 2.1837244466052868
+              },
+              {
+                "step": 50,
+                "loss": -2.755735817002975,
+                "gradient": 0.5072425155729338
+              },
+              {
+                "step": 100,
+                "loss": -2.8061085130171874,
+                "gradient": 0.04602337673296112
+              },
+              {
+                "step": 150,
+                "loss": -2.8063106413636936,
+                "gradient": 0.004241999289351183
+              },
+              {
+                "step": 200,
+                "loss": -2.8063123607457814,
+                "gradient": 0.00029018786601252424
+              }
+            ]
+          }
+        }
+      ],
+      "selected": "log_speed"
+    },
+    {
+      "K": 12,
+      "state": "captured",
+      "candidates": [
+        {
+          "kind": "original",
+          "parameters": [
+            -1.2039728043259361,
+            0.0
+          ],
+          "validation_NLL": -0.39911410679013093,
+          "fit": {
+            "steps": 0,
+            "reason": "original_noise_baseline"
+          }
+        },
+        {
+          "kind": "global",
+          "parameters": [
+            -2.5340459252076615,
+            0.0
+          ],
+          "validation_NLL": -1.2295242747637927,
+          "fit": {
+            "steps": 196,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.46347436141260717,
+                "gradient": 1.791100443453653
+              },
+              {
+                "step": 50,
+                "loss": -1.993022655207836,
+                "gradient": 0.16043964728972893
+              },
+              {
+                "step": 100,
+                "loss": -1.9980567374629135,
+                "gradient": 0.009276666037543416
+              },
+              {
+                "step": 150,
+                "loss": -1.9980721585333217,
+                "gradient": 0.0023096755536422264
+              }
+            ]
+          }
+        },
+        {
+          "kind": "log_speed",
+          "parameters": [
+            -2.4058850999228225,
+            0.4366823422258517
+          ],
+          "validation_NLL": -1.4304036502779451,
+          "fit": {
+            "steps": 240,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.46347436141260717,
+                "gradient": 2.0881012779069414
+              },
+              {
+                "step": 50,
+                "loss": -2.08733102172061,
+                "gradient": 0.2538119331726007
+              },
+              {
+                "step": 100,
+                "loss": -2.1223664357254406,
+                "gradient": 0.01771376743751672
+              },
+              {
+                "step": 150,
+                "loss": -2.122496398447428,
+                "gradient": 0.0015073103640305158
+              },
+              {
+                "step": 200,
+                "loss": -2.122497200801058,
+                "gradient": 6.816824539009417e-05
+              }
+            ]
+          }
+        }
+      ],
+      "selected": "log_speed"
+    },
+    {
+      "K": 12,
+      "state": "free",
+      "candidates": [
+        {
+          "kind": "original",
+          "parameters": [
+            -1.2039728043259361,
+            0.0
+          ],
+          "validation_NLL": -0.29889818500812065,
+          "fit": {
+            "steps": 0,
+            "reason": "original_noise_baseline"
+          }
+        },
+        {
+          "kind": "global",
+          "parameters": [
+            -2.7018310087105375,
+            0.0
+          ],
+          "validation_NLL": 1.8575361531717351,
+          "fit": {
+            "steps": 208,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.5200625678234624,
+                "gradient": 1.8999880511618705
+              },
+              {
+                "step": 50,
+                "loss": -2.5341061920038253,
+                "gradient": 0.46140582910746
+              },
+              {
+                "step": 100,
+                "loss": -2.56552032833494,
+                "gradient": 0.03567505679955196
+              },
+              {
+                "step": 150,
+                "loss": -2.5656809843580546,
+                "gradient": 0.0016742539049280636
+              },
+              {
+                "step": 200,
+                "loss": -2.56568132727525,
+                "gradient": 0.0002413086322085034
+              }
+            ]
+          }
+        },
+        {
+          "kind": "log_speed",
+          "parameters": [
+            -2.6195378926884483,
+            0.8676962539823059
+          ],
+          "validation_NLL": -0.5777040898639922,
+          "fit": {
+            "steps": 252,
+            "reason": "training_objective_plateau_or_small_gradient",
+            "trace": [
+              {
+                "step": 0,
+                "loss": -0.5200625678234624,
+                "gradient": 2.221400387243817
+              },
+              {
+                "step": 50,
+                "loss": -3.2720897288014457,
+                "gradient": 0.3209311904432939
+              },
+              {
+                "step": 100,
+                "loss": -3.322405002194026,
+                "gradient": 0.0318612205536776
+              },
+              {
+                "step": 150,
+                "loss": -3.3225651678111534,
+                "gradient": 0.00300355203641282
+              },
+              {
+                "step": 200,
+                "loss": -3.322567623243598,
+                "gradient": 0.0002707544469079334
+              },
+              {
+                "step": 250,
+                "loss": -3.3225676366417503,
+                "gradient": 1.03629924007297e-05
+              }
+            ]
+          }
+        }
+      ],
+      "selected": "log_speed"
+    }
+  ]
+}

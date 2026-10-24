@@ -1,0 +1,6 @@
+{
+  "max_steps": 600,
+  "min_steps": 120,
+  "patience": 100,
+  "degree": 24
+}

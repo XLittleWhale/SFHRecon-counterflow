@@ -1,0 +1,22 @@
+# Data, run outputs and original experimental files stay outside source control.
+/data/
+/runs/
+/dist/
+*.vtkhdf
+*.vtkhdf.series
+*.xlsx
+*.xls
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+/build/
+.venv/
+.env
+.env.*
+*.log
+*.aux
+*.synctex.gz
+*.tmp
+.DS_Store
+Thumbs.db

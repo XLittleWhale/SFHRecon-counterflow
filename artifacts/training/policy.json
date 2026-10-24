@@ -1,0 +1,17 @@
+{
+  "seeds": [
+    141001,
+    141002
+  ],
+  "lr": 3e-05,
+  "batch": 512,
+  "max_epochs": 64,
+  "patience": 12,
+  "max_seconds_per_seed": 180,
+  "train_sobol": 32,
+  "validation_sobol": 64,
+  "init": "existing H18; continuation retraining, not training from scratch",
+  "selection": "mean validation K12/16/18; epoch zero eligible; no per-case network",
+  "data_sha": "c661beb26f14a9eb92eec60a787daf522d15030c04419ec0cf12b13325f4daec",
+  "seed_sha": "df8a03012edd2ff19fce66f54a2f77ed091cfd70637f093d15f5f63b9f12eff1"
+}

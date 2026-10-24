@@ -1,0 +1,48 @@
+{
+  "cases": [
+    {
+      "case": "periodic_1p5",
+      "coefficient_max_abs": 0.0,
+      "velocity_max_abs_m_s": 0.0,
+      "validation_score_max_abs": 0.0,
+      "particle_split_disjoint": true
+    },
+    {
+      "case": "periodic_4",
+      "coefficient_max_abs": 0.0,
+      "velocity_max_abs_m_s": 0.0,
+      "validation_score_max_abs": 0.0,
+      "particle_split_disjoint": true
+    },
+    {
+      "case": "periodic_10",
+      "coefficient_max_abs": 0.0,
+      "velocity_max_abs_m_s": 0.0,
+      "validation_score_max_abs": 0.0,
+      "particle_split_disjoint": true
+    },
+    {
+      "case": "cf_261",
+      "coefficient_max_abs": 0.0,
+      "velocity_max_abs_m_s": 0.0,
+      "validation_score_max_abs": 0.0,
+      "particle_split_disjoint": true
+    },
+    {
+      "case": "cf_505",
+      "coefficient_max_abs": 0.0,
+      "velocity_max_abs_m_s": 0.0,
+      "validation_score_max_abs": 0.0,
+      "particle_split_disjoint": true
+    }
+  ],
+  "data_files_checked": 23,
+  "package_modules": 11,
+  "historical_imports": false,
+  "long_training_executed": false,
+  "model_sha": "5ac09bd2927a751ec957a0ab6f573a4a744a4ff5ef91d6150e4c8a0f69f6fb14",
+  "calibration_sha": "531f8f3b3052e4ab0a14978ec9c9a33f354053f8078bedbe89bde855b4e71eda",
+  "correlation_sha": "c71df520315ddc2ecc0225f3f418df4c74ccdb0e1a5f6dc8bc36b01f88e0e5b6",
+  "policy_sha": "d5f8801669574208c2d8a2aa3fc5560690ae9d43db8590354b203ac2d14f1577",
+  "likelihood_version": "unified-free-correlation-v1"
+}

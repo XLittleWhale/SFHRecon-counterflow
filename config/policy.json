@@ -1,0 +1,73 @@
+{
+  "version": "unified-free-correlation-v1",
+  "case_labels": [
+    "periodic_1p5",
+    "periodic_4",
+    "periodic_10",
+    "cf_261",
+    "cf_505"
+  ],
+  "network": "one retrained H18 GRU/sign/anchor mixture checkpoint for ALL cases",
+  "likelihood": "captured original independent physical mixture; free marginalized random intercept",
+  "condition_orders": [
+    2,
+    4,
+    8,
+    12,
+    16,
+    18
+  ],
+  "K": 12,
+  "orders": [
+    2,
+    4,
+    8,
+    12
+  ],
+  "steps": [
+    30,
+    30,
+    40,
+    160
+  ],
+  "learning_rates": [
+    0.012,
+    0.006,
+    0.004,
+    0.002
+  ],
+  "joint_seconds": 300,
+  "seed_first_seconds": 225,
+  "refine_seconds": 150,
+  "refine_steps": 120,
+  "selection": "equal-state/equal-window validation; seeded promotion guarded by paired physical-particle SE",
+  "split": "physical pid modulo 5: test=0; validation=1; fit=2,3,4",
+  "missing_state": "omit absent state from all reductions; never borrow held-out particles",
+  "PDE": "original momentum/Vinen, Fns coefficient 2/3, initial fields only, no delta F or learned closure",
+  "dt_ms": 1,
+  "substeps": 2,
+  "train_degree": 16,
+  "validation_degree": 24,
+  "CF": "Shen walls, nu_s=0; free raw 180fps intervals; captured original 1ms composite",
+  "periodic": "periodic Fourier, nu_s=alpha*kappa",
+  "train_cases": [
+    "vn0_0005m_s",
+    "vn0_001m_s",
+    "vn0_002m_s",
+    "vn0_0025m_s",
+    "vn0_003m_s",
+    "vn0_005m_s",
+    "vn0_0085m_s"
+  ],
+  "validation_case": "vn0_0065m_s",
+  "test_cases": [
+    "vn0_0015m_s",
+    "vn0_004m_s",
+    "vn0_01m_s"
+  ],
+  "field_truth_used_in_inverse": false,
+  "test_used_in_selection": false,
+  "scope": "two shared-initial windows; 5--17ms periodic and 24ms CF; not full 100ms recordings",
+  "convergence_claim": false,
+  "per_case_version_selection": false
+}

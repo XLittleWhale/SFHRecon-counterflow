@@ -1,0 +1,10 @@
+{
+  "freshly_extracted_source_checkout": true,
+  "exit_code": 0,
+  "old_project_read_guard": true,
+  "allowed_project_data": [
+    "data",
+    "runs/baseline"
+  ],
+  "source_files": 37
+}

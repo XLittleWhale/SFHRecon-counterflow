@@ -1,0 +1,44 @@
+{
+  "runs": [
+    {
+      "seed": 141001,
+      "selected_epoch": 1,
+      "last_epoch": 13,
+      "steps": 533,
+      "baseline": -4.742659347137544,
+      "validation": -4.743926214515616,
+      "seconds": 5.775800100003835,
+      "stop": "validation_early_stop",
+      "from_scratch": false,
+      "converged": false,
+      "field_output_labels": false
+    },
+    {
+      "seed": 141002,
+      "selected_epoch": 2,
+      "last_epoch": 14,
+      "steps": 574,
+      "baseline": -4.742659347137544,
+      "validation": -4.745645476408325,
+      "seconds": 6.192479100020137,
+      "stop": "validation_early_stop",
+      "from_scratch": false,
+      "converged": false,
+      "field_output_labels": false
+    }
+  ],
+  "selected": {
+    "seed": 141002,
+    "selected_epoch": 2,
+    "last_epoch": 14,
+    "steps": 574,
+    "baseline": -4.742659347137544,
+    "validation": -4.745645476408325,
+    "seconds": 6.192479100020137,
+    "stop": "validation_early_stop",
+    "from_scratch": false,
+    "converged": false,
+    "field_output_labels": false
+  },
+  "same_model_all_cases": true
+}

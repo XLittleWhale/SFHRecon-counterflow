@@ -1,0 +1,924 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=25mm]{geometry}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{booktabs}
+\usepackage[authoryear,round]{natbib}
+\usepackage[hidelinks]{hyperref}
+\numberwithin{equation}{section}
+\setlength{\emergencystretch}{2em}
+
+% Updated 2026-10-23 to the verified UnifiedFreeCorrelation_20261014 baseline.
+% Source and audit paths are recorded in UPDATE_NOTES_20261023.txt.
+% Earlier diagnostics are identified separately from current-run results.
+% The bibliography is embedded so that this file has no external dependencies.
+
+\title{Flow Reconstruction of Superfluid Counterflow}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Sparse particle trajectories in helium II do not directly measure either component velocity. We combine a conditional distribution of vortex sign and virtual-anchor displacement with a source-consistent particle-force decoder and a two-fluid momentum--Vinen evolution model. The inverse controls are the initial normal-fluid and superfluid modal coefficients, shared across two observation windows. A marginalized segment bias accounts for persistent free-particle discrepancy; captured particles retain a physical mixture observation model. One network and one optimization policy are used for periodic synthetic cases and channel experiments. In three short-window periodic tests, normal/superfluid component RMS errors are respectively $0.097/0.315$, $0.512/0.793$ and $5.664/6.323\,\mathrm{mm\,s^{-1}}$ at mean normal speeds of $1.5$, $4$ and $10\,\mathrm{mm\,s^{-1}}$. Modal truncation accounts for only $1.5$--$18\%$ of the squared error. Experimental performance varies between two time blocks, and no experimental field truth is available. The results establish conditional reconstruction capability, but not uniform accuracy, unique identification of both fields, or calibrated field uncertainty. Persistent model discrepancy and unequal observational sensitivity remain more immediate limitations than modal bandwidth alone.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:introduction}
+
+Thermal counterflow in helium II provides a setting in which heat transport, classical viscous motion and quantized vorticity are coupled. The normal component carries entropy away from the heat source, while the superfluid component moves in the opposite direction to maintain zero net mass flux. Above the onset of quantum turbulence, a tangle of quantized vortex lines mediates momentum exchange between the two components. Reconstructing their spatially and temporally varying velocities would therefore provide information about both the hydrodynamic flow and its coupling to quantum turbulence. Such a reconstruction is difficult because the experimentally accessible quantities are usually sparse particle trajectories, whereas the desired quantities are two continuous velocity fields.
+
+Particle image velocimetry (PIV) and particle tracking velocimetry (PTV) have substantially improved access to helium-II flows. PIV revealed large structures in counterflow around a cylinder \citep{ZhangVanSciver2005}, and solid-particle visualization established that particles can become trapped on quantized vortices \citep{Bewley2006}. These observations expose an essential qualification in interpreting particle measurements. In a classical fluid, sufficiently small particles with a short response time can approximately follow the local fluid velocity. In helium II, a particle may instead move freely under normal-fluid drag and inertial forces, or become attached to a vortex and experience additional forces associated with vortex motion and deformation. Particle statistics consequently contain information about counterflow, but the particle velocity cannot in general be identified with either component velocity \citep{Mineda2013,Mastracci2019}.
+
+The resulting inverse problem involves more than interpolation of scattered velocities. Even for a freely moving particle, the retained force balance depends on the normal-fluid velocity and on acceleration contributions from both components. For a captured particle, the balance also depends on the circulation orientation and the local vortex geometry. These quantities are rarely resolved by particle imaging. Thus, distinct combinations of fluid velocities and vortex configurations may produce similar observed displacements. A reconstruction must account for the measurement process as well as the equations governing the fluid fields; otherwise, errors in the particle model can be absorbed into the inferred velocities.
+
+Variational data assimilation offers a framework for combining observations distributed in time with a dynamical model \citep{LeDimetTalagrand1986}. Physics-informed neural networks provide a complementary approach by incorporating differential-equation residuals into the fitting objective \citep{Raissi2019}. Recent work on reconstruction from Lagrangian measurements has also demonstrated the importance of representing particle inertia within the observation model \citep{ZhouGrauer2026}. These developments motivate a reconstruction strategy for helium II, but an additional difficulty arises from the disparity between the scales of the particle forces and the resolved fluid fields. Vortex-filament models describe individual vortex segments and their interaction with particles \citep{Schwarz1985,Schwarz1988,Mineda2013}; a hydrodynamic reconstruction at the scale of an experimental field of view cannot generally resolve all these segments. Conversely, a vortex-line-density closure can represent mean mutual friction without specifying the geometry needed to evaluate the force on a particular captured particle.
+
+Here we address this missing information through a conditional probability model for physically defined vortex variables. A reduced planar particle--vortex model supplies labelled trajectories. A neural network estimates the distribution of circulation sign and vortex displacement from a short particle history and the local candidate fluid state. The particle force balance then converts that distribution into a probability density for the next sampled displacement. The learned quantity is an observation model, not a direct predictor of the two velocity fields. A prescribed two-fluid momentum--Vinen system propagates a single initial state shared across two observation windows. Initial controls are activated from low to high order while the forward dynamics retain a fixed final modal space. Free-particle discrepancy is correlated within each segment and analytically marginalized. The objective is a conditional, regularized reconstruction, not unrestricted identification of the complete fluid and vortex state.
+
+The formulation is developed in two spatial dimensions to match planar particle measurements and to make repeated dynamical inversion tractable. Its reference dynamics build on planar counterflow and inertial-particle models \citep{Galantucci2015,Varga2014}, with an additional virtual-anchor representation of vortex tension. This representation does not determine the three-dimensional vortex configuration outside the imaging plane. The intended result is a reconstruction of resolved planar two-fluid fields, conditional on the particle classification, material parameters, mean counterflow and adopted closures. Synthetic cases allow field errors to be assessed against filtered reference data, while experimental trajectories provide an exploratory assessment of displacement consistency. These two forms of assessment establish different levels of evidence and are kept distinct below.
+
+\section{Theoretical Background}
+\label{sec:theory}
+
+\subsection{Counterflow and resolved two-fluid dynamics}
+\label{sec:twofluid}
+
+Let $\rho_n$ and $\rho_s$ denote the normal-fluid and superfluid densities, with $\rho=\rho_n+\rho_s$. At a prescribed temperature $T$, these densities, the normal-fluid dynamic viscosity $\mu_n$, and the mutual-friction coefficients are treated as known material properties. We consider the low-Mach-number, constant-density approximation and impose
+\begin{equation}
+ \nabla\cdot\mathbf V_n=\nabla\cdot\mathbf V_s=0,
+ \qquad
+ \rho_n\langle\mathbf V_n\rangle_S+
+ \rho_s\langle\mathbf V_s\rangle_S=\mathbf0,
+ \label{eq:incompressibility}
+\end{equation}
+where $\mathbf V_f$, $f\in\{n,s\}$, denotes a resolved velocity and $\langle\cdot\rangle_S$ a cross-sectional average. Separate incompressibility of the components is a modelling assumption stronger than the divergence-free condition on the total mass current. The zero-mass-flux constraint applies to the mean flow; it does not require cancellation of the two local velocities at every point.
+
+If $s_{\rm He}$ is the entropy per unit total mass and $Q_h$ the imposed heat flux, entropy transport gives
+\begin{equation}
+ Q_h=\rho s_{\rm He}T U,
+ \qquad
+ \overline{\mathbf V}_n=U\mathbf e_y,
+ \qquad
+ \overline{\mathbf V}_s=-\frac{\rho_n}{\rho_s}U\mathbf e_y,
+ \qquad
+ \overline{\mathbf V}_{ns}=\frac{\rho}{\rho_s}U\mathbf e_y,
+ \label{eq:counterflowmeans}
+\end{equation}
+where $\mathbf V_{ns}=\mathbf V_n-\mathbf V_s$. The thermal drive fixes these mean quantities. The current reconstruction treats $T$ as a parameter and does not solve a temperature equation.
+
+The distinction between resolved and vortex-scale velocities is central to the formulation. Denote a spatial filter of width $\Delta$ by $\langle\cdot\rangle_\Delta$ and write $\mathbf V_f=\langle\mathbf v_f\rangle_\Delta$. A hydrodynamic interpretation requires an averaging region containing sufficiently many vortex segments, with characteristic intervortex spacing $\ell_v\sim L^{-1/2}$. The separation $\ell_v\ll\Delta$ is an assumption to be checked rather than a property guaranteed at every counterflow speed. Filtering also produces unresolved momentum stresses. The following reduced equations prescribe their treatment through the adopted closure rather than constituting an exact filtering identity:
+\begin{equation}
+ \begin{aligned}
+ \rho_n\mathcal D_n\mathbf V_n
+ &=-\rho_n\nabla\Pi_n+\mu_n\nabla^2\mathbf V_n
+   +\mathbf F_{ns}+\rho_n\mathbf g_n,\\
+ \rho_s\mathcal D_s\mathbf V_s
+ &=-\rho_s\nabla\Pi_s+\mathbf T_v
+   -\mathbf F_{ns}+\rho_s\mathbf g_s,
+ \end{aligned}
+ \qquad
+ \mathcal D_f=\partial_t+\mathbf V_f\cdot\nabla.
+ \label{eq:twofluidgeneral}
+\end{equation}
+Here $\mathbf F_{ns}$ is the force per unit volume acting on the normal fluid, $\mathbf T_v$ is a coarse vortex-tension force density, and $\mathbf g_f$ maintains the prescribed mean drive. The scalar $\Pi_f$ has units of kinematic pressure and incorporates the gradient terms retained in the isothermal model. Mutual friction enters the two momentum balances with equal and opposite signs. An inviscid microscopic superfluid equation is compatible with dissipation of relative motion through this intercomponent force.
+
+\subsection{Vortex dynamics, mutual friction and line-density closure}
+\label{sec:vortexclosure}
+
+A quantized vortex is represented by a curve $\mathbf s(\xi,t)$ parameterized by arc length $\xi$. Its tangent is $\mathbf t=\mathbf s'$ and its curvature vector is $\mathbf s''$. Away from the vortex core, the induced velocity is given by the Biot--Savart representation
+\begin{equation}
+ \mathbf v_s(\mathbf x,t)=\mathbf v_s^{\rm ext}(\mathbf x,t)
+ +\frac{\kappa}{4\pi}\int_{\mathcal L}
+ \frac{\mathbf s'\times(\mathbf x-\mathbf s)}{|\mathbf x-\mathbf s|^3}
+ \,d\xi,
+ \label{eq:biotsavart}
+\end{equation}
+where $\kappa$ is the circulation quantum and $\mathcal L$ the union of vortex curves. Evaluation on the curve requires core regularization. Separating the local singular contribution gives
+\begin{equation}
+ \mathbf v_0=\mathbf v_s^{\rm ext}+\mathbf v_s^{\rm nonlocal}
+       +\beta_\ell\mathbf t\times\mathbf s'',
+ \qquad
+ \beta_\ell\simeq\frac{\kappa}{4\pi}\log\frac{b}{a_0},
+ \label{eq:localinduction}
+\end{equation}
+with core radius $a_0$ and an outer length $b$. This decomposition retains the nonlocal contribution; it does not by itself invoke a local-induction-only approximation.
+
+The filament velocity in a normal flow is \citep{Schwarz1985,Schwarz1988}
+\begin{equation}
+ \dot{\mathbf s}=\mathbf v_0
+ +\alpha\mathbf t\times(\mathbf v_n-\mathbf v_0)
+ -\alpha'\mathbf t\times[\mathbf t\times(\mathbf v_n-\mathbf v_0)],
+ \label{eq:filament}
+\end{equation}
+where $\alpha$ and $\alpha'$ depend on temperature. With the force convention in \eqref{eq:twofluidgeneral}, the corresponding normal-fluid force per unit vortex length is
+\begin{equation}
+ \mathbf f_{ns}=\rho_s\kappa\left\{
+ \alpha\mathbf t\times[\mathbf t\times\mathbf w]
+ +\alpha'\mathbf t\times\mathbf w\right\},
+ \qquad \mathbf w=\mathbf v_n-\mathbf v_0.
+ \label{eq:lineforce}
+\end{equation}
+Its dissipative part opposes the component of slip perpendicular to the tangent.
+
+To obtain a finite coarse force density, define the vortex-line density and line-weighted average within an averaging volume $\mathcal V_\Delta$ by
+\begin{equation}
+ L=\frac{1}{|\mathcal V_\Delta|}
+      \int_{\mathcal L\cap\mathcal V_\Delta}d\xi,
+ \qquad
+ \langle A\rangle_{\mathcal L,\Delta}
+ =\frac{\int_{\mathcal L\cap\mathcal V_\Delta}A\,d\xi}
+        {\int_{\mathcal L\cap\mathcal V_\Delta}d\xi},
+ \qquad
+ \mathbf F_{ns}=L\langle\mathbf f_{ns}\rangle_{\mathcal L,\Delta}.
+ \label{eq:linedensity}
+\end{equation}
+Thus $L$ has units of inverse area, and the factor $L$ is required when converting a force per unit length into a force per unit volume. Approximate the slip in \eqref{eq:lineforce} by $\mathbf V_{ns}$ and neglect its correlations with orientation and local self-induced motion. The identity $\mathbf t\times(\mathbf t\times\mathbf u)=(\mathbf t\mathbf t^T-I)\mathbf u$ then yields
+\begin{equation}
+ \begin{aligned}
+ \mathbf F_{ns}&\simeq-\alpha\rho_s\kappa L
+      (I-\mathsf Q)\mathbf V_{ns}
+   +\alpha'\rho_s\kappa L\,\mathbf p_\ell\times\mathbf V_{ns},\\
+ \mathsf Q&=\langle\mathbf t\mathbf t^T\rangle_{\mathcal L,\Delta},
+ \qquad
+ \mathbf p_\ell=\langle\mathbf t\rangle_{\mathcal L,\Delta}.
+ \end{aligned}
+ \label{eq:orientationclosure}
+\end{equation}
+For an unpolarized, isotropic three-dimensional tangle, $\mathsf Q=I_3/3$ and $\mathbf p_\ell=\mathbf0$, giving
+\begin{equation}
+ \boxed{\mathbf F_{ns}=-\frac23\alpha\rho_s\kappa L\mathbf V_{ns}}.
+ \label{eq:isotropicfriction}
+\end{equation}
+The factor $2/3$ follows from three-dimensional orientation averaging, even when the resolved fields depend on only two spatial coordinates. Counterflow tangles can be anisotropic, particularly near walls; isotropy is the present closure assumption. As a sign check, the rate of work on the combined kinetic energy is
+\begin{equation}
+ \mathbf F_{ns}\cdot\mathbf V_n-\mathbf F_{ns}\cdot\mathbf V_s
+ =-\frac23\alpha\rho_s\kappa L|\mathbf V_{ns}|^2\leq0.
+ \label{eq:frictiondissipation}
+\end{equation}
+For approximately constant $\beta_\ell$, the local line-tension contribution has the form $\mathbf T_v\simeq\rho_s\kappa\beta_\ell L\langle\mathbf s''\rangle_{\mathcal L,\Delta}$. It vanishes when the averaged curvature vector vanishes. This is an additional closure assumption, not a consequence of incompressibility.
+
+The scalar density is evolved using a transported Vinen-type equation \citep{Vinen1957}:
+\begin{equation}
+ \partial_tL+\nabla\cdot(L\mathbf V_s)
+ =\alpha_v|\mathbf V_{ns}|L^{3/2}-\beta_vL^2
+   +\gamma_v(T)|\mathbf V_{ns}|^{5/2}.
+ \label{eq:vinen}
+\end{equation}
+The production term reflects a stretching rate proportional to relative speed and typical curvature $L^{1/2}$, giving $|\mathbf V_{ns}|L^{3/2}$. A decay time proportional to $(\kappa L)^{-1}$ gives the $L^2$ term. The coefficients $\alpha_v$ and $\beta_v$ are distinct from $\alpha$ and $\alpha'$. The last term is the additional phenomenological source retained in the implementation; it is not part of the classical two-term balance. The transport velocity is approximated by $\mathbf V_s$.
+
+No independent line-density initial condition is inferred. Each joint reconstruction starts once from
+\begin{equation}
+ L_0=\left(\frac{\alpha_v}{\beta_v}
+           \frac{\rho}{\rho_s}|U|\right)^2,
+ \qquad \chi=\log(L/L_0),
+ \label{eq:Linitial}
+\end{equation}
+which balances the first two reaction terms for uniform mean counterflow. If $\gamma_v\neq0$, it is not an exact stationary solution of \eqref{eq:vinen}. Dividing that equation by $L$ and using \eqref{eq:incompressibility} gives
+\begin{equation}
+ \partial_t\chi+\mathbf V_s\cdot\nabla\chi
+ =\alpha_v|\mathbf V_{ns}|\sqrt L-\beta_vL
+   +\gamma_v(T)\frac{|\mathbf V_{ns}|^{5/2}}{L},
+ \qquad L=L_0e^\chi.
+ \label{eq:logvinen}
+\end{equation}
+Evolving $\chi$ supplies a positive representation of $L$. The implementation clips $\chi$ to $[-12,8]$ before exponentiation. The resulting density enters both mutual friction and the reaction terms. This numerical safeguard is part of the forward model, not observational evidence for the line density. Density is propagated through the second window without reinitialization.
+
+\subsection{Particle force balance and unresolved vortex geometry}
+\label{sec:particlebackground}
+
+Consider a spherical particle of radius $a_p$, material density $\rho_p$ and volume $\Lambda_p=4\pi a_p^3/3$. Its position and velocity satisfy $\dot{\mathbf x}_p=\mathbf v_p$. The retained fluid forces are normal-fluid Stokes drag, buoyancy, fluid inertia and added mass. To display the origin of the inertial coefficient, let $\mathcal D_f^{\rm loc}=\partial_t+\mathbf v_f\cdot\nabla$ and write the free-particle balance as
+\begin{equation}
+ \begin{aligned}
+ \rho_p\Lambda_p\dot{\mathbf v}_p={}&
+ D_p(\mathbf v_n-\mathbf v_p)+(\rho_p-\rho)\Lambda_p\mathbf g
+ +\Lambda_p\sum_{f=n,s}\rho_f\mathcal D_f^{\rm loc}\mathbf v_f\\
+ &+C_A\Lambda_p\sum_{f=n,s}\rho_f
+      (\mathcal D_f^{\rm loc}\mathbf v_f-\dot{\mathbf v}_p),
+ \qquad D_p=6\pi\mu_n a_p.
+ \end{aligned}
+ \label{eq:addedmassderivation}
+\end{equation}
+For a sphere, $C_A=1/2$. Moving the particle-acceleration term to the left gives
+\begin{equation}
+ \begin{aligned}
+ m_p^*\dot{\mathbf v}_p
+ &=D_p(\mathbf v_n-\mathbf v_p)+\mathbf b_p^{\rm mat},\\
+ m_p^*&=(\rho_p+\rho/2)\Lambda_p,\\
+ \mathbf b_p^{\rm mat}
+ &=\frac32\Lambda_p\sum_{f=n,s}\rho_f\mathcal D_f^{\rm loc}\mathbf v_f
+   +(\rho_p-\rho)\Lambda_p\mathbf g.
+ \end{aligned}
+ \label{eq:freephysical}
+\end{equation}
+This illustrates the $3/2$ coefficient and the dependence on both component accelerations. It is a reduced force model of the type used in particle--vortex calculations \citep{Mineda2013}. Finite-size corrections, history forces and additional lift terms are not retained. In particular, Stokes drag is an adopted constitutive approximation whose adequacy depends on particle slip and local flow conditions.
+
+Attachment to a vortex adds line tension, Magnus force and mutual friction acting on an effective segment of length $\ell_e$. In a local straight-segment approximation, the additional force is
+\begin{equation}
+ \begin{aligned}
+ \mathbf F_{\rm vortex}={}&\mathbf F_T
+ +\rho_s\kappa\ell_e\mathbf t\times(\mathbf v_p-\mathbf v_s)\\
+ &+\ell_e\left\{
+ \Gamma\mathbf t\times[\mathbf t\times(\mathbf v_p-\mathbf v_n)]
+ +\Gamma'\mathbf t\times(\mathbf v_p-\mathbf v_n)\right\},
+ \end{aligned}
+ \label{eq:captured3d}
+\end{equation}
+where $\Gamma$ and $\Gamma'$ are dimensional friction coefficients per unit length. The line-tension force can be expressed using the tangents at the segment ends:
+\begin{equation}
+ \mathbf F_T=T_\ell(\mathbf t_+-\mathbf t_-),
+ \qquad T_\ell\simeq\rho_s\kappa\beta_\ell.
+ \label{eq:linetension}
+\end{equation}
+The captured balance is obtained by adding \eqref{eq:captured3d} to the right-hand side of \eqref{eq:freephysical}. The factors $\ell_e$ convert forces per unit length to forces on the particle--segment system; $T_\ell$ itself has units of force. Resolving these forces requires geometry unavailable from a coarse velocity field and a scalar $L$ alone. This motivates the latent geometric variables introduced next.
+
+\section{Methodology}
+\label{sec:methodology}
+
+\subsection{Planar reference dynamics and virtual vortex anchors}
+\label{sec:reference}
+
+The reference trajectories are generated by a planar normal-fluid--point-vortex model. They are solutions of this reduced model, rather than planar projections assumed to satisfy an independently specified three-dimensional system. Define the rotation operator
+\begin{equation}
+ J=\begin{pmatrix}0&-1\\1&0\end{pmatrix},
+ \qquad J\mathbf u=(-u_y,u_x),\qquad J^2=-I_2.
+ \label{eq:rotation}
+\end{equation}
+A point vortex has position $\mathbf X_j$ and sign $q_j\in\{-1,+1\}$. Let $\mathcal D_h$ denote conservative cloud-in-cell deposition and $\mathcal G_c$, $\mathcal G_\ell$ smoothing at the core and friction scales. The deposited quantities are
+\begin{equation}
+ \omega_s^h=\kappa\mathcal G_c\mathcal D_h\{q_j\},
+ \qquad L^h=\mathcal G_\ell\mathcal D_h\{1\},
+ \qquad \omega_\ell^h=\kappa\mathcal G_\ell\mathcal D_h\{q_j\}.
+ \label{eq:deposition}
+\end{equation}
+The superscript $h$ identifies source-model fields. The point number density $L^h$ has units of inverse area and serves as a planar surrogate for vortex-line density. Different smoothing kernels imply that $\omega_s^h$ and $\omega_\ell^h$ need not coincide. Solving $-\nabla^2\psi_s^h=\omega_s^h$ on the periodic domain gives $\mathbf v_s^h=\overline{\mathbf v}_s+(\partial_y\psi_s^h,-\partial_x\psi_s^h)$.
+
+The normal-fluid vorticity and unbound vortices evolve according to
+\begin{equation}
+ \begin{aligned}
+ \partial_t\omega_n^h+\mathbf v_n^h\cdot\nabla\omega_n^h
+ &=\nu_n\nabla^2\omega_n^h+
+   \rho_n^{-1}\operatorname{curl}\mathbf F_{ns}^h,\\
+ \mathbf F_{ns}^h
+ &=-\alpha\rho_s\kappa L^h\mathbf v_{ns}^h
+   +\alpha'\rho_s\omega_\ell^h J\mathbf v_{ns}^h,\\
+ \dot{\mathbf X}_j
+ &=\mathbf v_s^h(\mathbf X_j)
+   +\alpha q_jJ\mathbf v_{ns}^h(\mathbf X_j)
+   +\alpha'\mathbf v_{ns}^h(\mathbf X_j),
+ \end{aligned}
+ \label{eq:sourceequations}
+\end{equation}
+where $\nu_n=\mu_n/\rho_n$ and $\mathbf v_{ns}^h=\mathbf v_n^h-\mathbf v_s^h$. This point-vortex force differs from the three-dimensional isotropic closure \eqref{eq:isotropicfriction}. In particular, the source dissipative coefficient is unity, and a signed transverse term is retained. The reference generator and the reconstruction dynamics therefore have an explicit closure discrepancy.
+
+The force implementation requires a further distinction from \eqref{eq:freephysical}. For either a source field or a candidate resolved field, denote the local carrier velocity by $\mathbf u_f$. The acceleration supplied to the particle model is
+\begin{equation}
+ \mathbf A_f=\partial_t\mathbf u_f+
+              \nabla\frac{|\mathbf u_f|^2}{2},
+ \qquad
+ \mathbf b_p=\frac32\Lambda_p\sum_{f=n,s}\rho_f\mathbf A_f
+       +(\rho_p-\rho)\Lambda_p\mathbf g.
+ \label{eq:implementedacceleration}
+\end{equation}
+For planar flow with $\omega_f=\partial_xu_{f,y}-\partial_yu_{f,x}$, the vector identity for convective acceleration gives
+\begin{equation}
+ (\mathbf u_f\cdot\nabla)\mathbf u_f
+ =\nabla\frac{|\mathbf u_f|^2}{2}+\omega_fJ\mathbf u_f,
+ \qquad
+ \mathbf A_f-(\partial_t+\mathbf u_f\cdot\nabla)\mathbf u_f
+ =-\omega_fJ\mathbf u_f.
+ \label{eq:accelerationdifference}
+\end{equation}
+Thus the implemented acceleration is not the material derivative in a general rotational flow. The observation operator reproduces this source convention, and its discrepancy from the conventional inertial force must be included when interpreting experimental reconstructions.
+
+For the captured particle, put $\mathbf t=q\mathbf e_z$ in the Magnus and friction terms. Since $\mathbf e_z\times\mathbf u=J\mathbf u$ and $\mathbf e_z\times(\mathbf e_z\times\mathbf u)=-\mathbf u$, the planar balance becomes
+\begin{equation}
+ \begin{aligned}
+ m_p^*\dot{\mathbf v}_p={}&D_p(\mathbf u_n-\mathbf v_p)
+ +G_pqJ(\mathbf v_p-\mathbf u_s)\\
+ &-D_v(\mathbf v_p-\mathbf u_n)
+ +G_vqJ(\mathbf v_p-\mathbf u_n)+\mathbf b_p+\mathbf F_T,
+ \end{aligned}
+ \label{eq:captured2d}
+\end{equation}
+The dimensional friction coefficients can be obtained from a massless straight-segment balance. Writing $\mathcal G=\rho_s\kappa$ and $\mathbf v_L-\mathbf u_s=\alpha qJ\mathbf u_{ns}+\alpha'\mathbf u_{ns}$, that balance is $\mathcal G qJ(\mathbf v_L-\mathbf u_s)-\Gamma(\mathbf v_L-\mathbf u_n)+\Gamma'qJ(\mathbf v_L-\mathbf u_n)=\mathbf0$. Equating the coefficients of $\mathbf u_{ns}$ and $qJ\mathbf u_{ns}$ gives $\Gamma(1-\alpha')=\alpha(\mathcal G+\Gamma')$ and $\Gamma'(1-\alpha')=\alpha'\mathcal G-\alpha\Gamma$. Solving these relations yields
+\begin{equation}
+ \begin{aligned}
+ d_\alpha&=(1-\alpha')^2+\alpha^2,\qquad
+ \Gamma=\frac{\rho_s\kappa\alpha}{d_\alpha},\\
+ \Gamma'&=\frac{\rho_s\kappa[\alpha'(1-\alpha')-\alpha^2]}{d_\alpha},\qquad
+ G_p=\rho_s\kappa\ell_e,\quad D_v=\ell_e\Gamma,\quad G_v=\ell_e\Gamma'.
+ \end{aligned}
+ \label{eq:frictioncoefficients}
+\end{equation}
+All three coefficients $G_p,D_v,G_v$ have units of mass per unit time. A free particle obeys \eqref{eq:captured2d} with these three coefficients and $\mathbf F_T$ set to zero.
+
+Vortex tension is represented by two virtual anchors outside the imaging plane, at heights $\pm h$ and planar offsets $\bm\delta_\pm$ from the particle. The planar tension is
+\begin{equation}
+ \mathbf F_T=T_\ell\sum_{\sigma=\pm}
+ \frac{\bm\delta_\sigma}{\sqrt{h^2+|\bm\delta_\sigma|^2}},
+ \qquad
+ T_\ell=c_T\frac{\rho_s\kappa^2}{4\pi}\log\frac{\ell_v}{a_0}.
+ \label{eq:anchors}
+\end{equation}
+The saved reference trajectories have coincident planar anchor locations, $\bm\delta_+=\bm\delta_-=\bm\delta$. Accordingly,
+\begin{equation}
+ \mathbf F_T(\bm\delta)=
+ 2T_\ell\frac{\bm\delta}{\sqrt{h^2+|\bm\delta|^2}},
+ \qquad |\mathbf F_T|<2T_\ell,
+ \qquad z=(q,\mathbf d),\quad\mathbf d=\bm\delta/a_p.
+ \label{eq:latentgeometry}
+\end{equation}
+This symmetry permits a two-dimensional continuous latent variable. It represents the adopted anchor model, not arbitrary three-dimensional vortex geometry.
+
+The anchors respond to the particle load. An anchor velocity $\mathbf u_a$ follows
+\begin{equation}
+ m_a\dot{\mathbf u}_a
+ =-D_a(\mathbf u_a-\mathbf u_0)
+  +qG_aJ(\mathbf u_a-\mathbf u_0)-\mathbf f_{T,a},
+ \label{eq:anchordynamics}
+\end{equation}
+where $\mathbf u_0$ is the unloaded vortex velocity, $\mathbf f_{T,a}$ is the anchor's tension force on the particle, $m_a=c_m\rho_s a_0^2\ell_a$, $\ell_a=\ell_e/2$, $D_a=\ell_a\Gamma$ and $G_a=\ell_a\rho_s\kappa(1-\alpha')/d_\alpha$. A frozen-force linear integration avoids resolving the very short relaxation time $m_a/D_a$. The geometric constraint $a_p<h<2.5a_p$ and segment-length cap $\sqrt{h^2+|\bm\delta_\sigma|^2}<2.5a_p$ are enforced in the generator. The cap is a reduced geometric rule; its correction impulses are not completely transferred to the particle and fluid.
+
+On capture, the associated vortex point moves with the particle. Unbound points follow \eqref{eq:sourceequations}. Close opposite-sign pairs undergo a model re-injection event preserving vortex number and net circulation; a particle bound to a participating vortex is released and receives a short recapture cooldown. These events model unresolved changes in attachment and vortex topology. The observation model below uses intervals with a stable particle class and does not include a separate stochastic law for capture or release.
+
+The simulations use a doubly periodic $10\times10\,\mathrm{mm}^2$ domain at $T=2\,\mathrm K$, a $1024^2$ source grid and $512$ particles, of which $128$ are initially captured. The particle parameters are $a_p=2.3\,\mu\mathrm m$ and $\rho_p=145.6\,\mathrm{kg\,m^{-3}}$; $\ell_e=2a_p$, $h=1.75a_p$ and $c_T=1$. Trajectories are saved every $1\,\mathrm{ms}$ over $100\,\mathrm{ms}$. Fourier differentiation, dealiased normal-fluid advection, conservative deposition and interpolation are used. The fluid and unbound-vortex dynamics use fourth-order Runge--Kutta stepping; the captured-particle update uses a trapezoidal velocity step coupled to a pinned-vortex predictor--corrector. Reference fields for learning and assessment are conservative area averages on a $40^2$ grid, corresponding to a cell width of $0.25\,\mathrm{mm}$.
+
+\subsection{From a force balance to a sampled displacement}
+\label{sec:sampledresponse}
+
+Let $\mathbf x_{p,k}$ denote the measured position at $t_k$, with $\Delta t=t_{k+1}-t_k$. Periodic simulation tracks are unwrapped before taking differences. Rather than forming a second difference of position to estimate acceleration, define
+\begin{equation}
+ \mathbf w_{p,k}=\frac{\mathbf x_{p,k}-\mathbf x_{p,k-1}}{U\Delta t},
+ \qquad
+ \mathbf y_{p,k}=\frac{\mathbf x_{p,k+1}-\mathbf x_{p,k}}{U\Delta t}.
+ \label{eq:observeddisplacements}
+\end{equation}
+The vector $U\mathbf w_{p,k}$ is an interval-averaged velocity. It approximates, but is not identical to, the instantaneous velocity at $t_k$.
+
+Freeze the carrier quantities and latent geometry during one sampling interval. Collecting the terms proportional to $\mathbf v_p$ in \eqref{eq:captured2d} gives
+\begin{equation}
+ \begin{aligned}
+ \dot{\mathbf v}_p&=M_q\mathbf v_p+
+            \frac{\mathbf f_q+\mathbf F_T}{m_p^*},\\
+ M_q&=\frac{-(D_p+D_v)I_2+(G_p+G_v)qJ}{m_p^*},\\
+ \mathbf f_q&=(D_p+D_v)\mathbf u_n-G_pqJ\mathbf u_s
+                  -G_vqJ\mathbf u_n+\mathbf b_p.
+ \end{aligned}
+ \label{eq:frozenparticle}
+\end{equation}
+For $0\leq\tau\leq\Delta t$, variation of constants yields
+\begin{equation}
+ \mathbf v_p(t_k+\tau)=e^{\tau M_q}\mathbf v_p(t_k)
+ +\int_0^\tau e^{(\tau-r)M_q}
+       \frac{\mathbf f_q+\mathbf F_T}{m_p^*}\,dr.
+ \label{eq:variationconstants}
+\end{equation}
+Integrating over $\tau$ and exchanging the order of integration in the forcing term gives
+\begin{equation}
+ \Delta\mathbf x_p=
+ \left(\int_0^{\Delta t}e^{rM_q}\,dr\right)\mathbf v_p(t_k)
+ +\left(\int_0^{\Delta t}(\Delta t-r)e^{rM_q}\,dr\right)
+       \frac{\mathbf f_q+\mathbf F_T}{m_p^*}.
+ \label{eq:positionintegral}
+\end{equation}
+Define $A_q=\Delta t M_q$ and the dimensionless response matrices
+\begin{equation}
+ H_q=\int_0^1e^{uA_q}\,du,
+ \qquad B_q=\int_0^1(1-u)e^{uA_q}\,du.
+ \label{eq:responsematrices}
+\end{equation}
+The mean displacement used in the captured observation model is consequently
+\begin{equation}
+ \bm\mu^C_{p,k}(q,\mathbf d;\mathbf V)=
+ H_q\mathbf w_{p,k}
+ +\frac{\Delta t}{m_p^*U}B_q
+       [\mathbf f_q(\mathbf V)+\mathbf F_T(a_p\mathbf d)],
+ \label{eq:captureddecoder}
+\end{equation}
+where $\mathbf V$ denotes the pair of candidate fluid fields. A matrix-exponential evaluation of the augmented linear system supplies $H_q$ and $B_q$ without explicitly inverting $A_q$. Their limits as $A_q\to0$ are $I_2$ and $I_2/2$, respectively.
+
+For free particles, put $\beta_p=D_p\Delta t/m_p^*$. The response reduces to
+\begin{equation}
+ \begin{aligned}
+ H_F&=\frac{1-e^{-\beta_p}}{\beta_p},\qquad
+ B_F=\frac{1-H_F}{\beta_p},\\
+ \bm\mu^F_{p,k}(\mathbf V)
+ &=H_F\mathbf w_{p,k}
+  +\frac{\Delta t}{m_p^*U}B_F(D_p\mathbf V_n+\mathbf b_p).
+ \end{aligned}
+ \label{eq:freedecoder}
+\end{equation}
+The source and reconstruction both use \eqref{eq:implementedacceleration}. In the observation operator, candidate velocities and their gradients are averaged between $t_k$ and $t_{k+1}$, and the temporal derivative is approximated by the corresponding difference quotient. All are evaluated at the observed $\mathbf x_{p,k}$. Equations \eqref{eq:positionintegral}--\eqref{eq:freedecoder} are exact for the frozen linear force balance. They approximate the fully evolving particle dynamics because coefficients, sampling velocity and particle position within the interval are approximated.
+
+\subsection{Conditional vortex distribution and displacement likelihood}
+\label{sec:probability}
+
+For a captured particle, the history input comprises five consecutive normalized displacement velocities and relative positions:
+\begin{equation}
+ \mathcal H_{p,k}=
+ \left\{\mathbf w_{p,j},
+ \frac{\mathbf x_{p,j}-\mathbf x_{p,k}}{5U\Delta t}
+ \right\}_{j=k-4}^{k}.
+ \label{eq:history}
+\end{equation}
+This finite history is an approximation to the dependence on past attachment dynamics. It is not assumed to establish an exact Markov property. At resolution $K$, the local field conditions are
+\begin{equation}
+ \mathbf c^{\rm field}_{p,k,K}=
+ \left[
+ \operatorname{vec}\left(\frac{\mathbf V_f^{(K)}}{U}-\mathbf w_{p,k}\right)_{f=n,s},
+ \operatorname{vec}\left(\Delta t\nabla\mathbf V_f^{(K)}\right)_{f=n,s}
+ \right],
+ \label{eq:fieldconditions}
+\end{equation}
+where $\mathbf V_f^{(K)}$ is the candidate field represented in the current modal space. The five additional known physical conditions are
+\begin{equation}
+ \begin{gathered}
+ \mathbf c^{\rm phys}=\left[
+ \log(U/U_*),\ \log(h/a_p),\ \log(\ell_e/a_p),\
+ \log(\Delta t/\tau_p),\ \alpha\right],\\
+ U_*=4\,\mathrm{mm\,s^{-1}},\qquad
+ \tau_p=\frac{m_p^*}{D_p+D_v}.
+ \end{gathered}
+ \label{eq:physicalconditions}
+\end{equation}
+Together, these give $17$ dimensionless conditioning features. The field and history quantities are normalized using training data only.
+
+A gated recurrent unit with hidden dimension $32$ encodes $\mathcal H_{p,k}$. Fully connected layers combine this representation with $\mathbf c_{p,k,K}=[\mathbf c^{\rm phys},\mathbf c^{\rm field}_{p,k,K}]$ and parameterize
+\begin{equation}
+ p_\theta(q,\mathbf d\mid\mathcal H,\mathbf c)
+ =\pi_{\theta,q}\,
+ \mathcal N_2(\mathbf d;\bm\mu_{\theta,q},C_{\theta,q}C_{\theta,q}^T),
+ \qquad \sum_{q=\pm1}\pi_{\theta,q}=1.
+ \label{eq:latentdensity}
+\end{equation}
+Each sign has a full-covariance two-dimensional Gaussian; its Cholesky factor $C_{\theta,q}$ has positive diagonal entries. The two branches represent uncertainty in circulation orientation and anchor displacement. The network does not output either velocity field. The Gaussian support is not truncated at the source geometric cap. The tension map \eqref{eq:latentgeometry} remains bounded, but samples from \eqref{eq:latentdensity} need not satisfy every generator constraint.
+
+Marginalizing the unobserved geometry through the physical displacement map gives
+\begin{equation}
+ \begin{split}
+ p_{\theta,K}^C(\mathbf y_{p,k}\mid\mathcal H_{p,k},\mathbf V)
+ =\sum_{q=\pm1}\int_{\mathbb R^2}
+ &\mathcal N_2\left(\mathbf y_{p,k};
+       \bm\mu^C_{p,k}(q,\mathbf d;\mathbf V),
+       \sigma_{C,K}(U)^2I_2\right)\\[-1mm]
+ &\times p_\theta(q,\mathbf d\mid\mathcal H_{p,k},
+              \mathbf c_{p,k,K}(\mathbf V))\,d\mathbf d.
+ \end{split}
+ \label{eq:capturedlikelihood}
+\end{equation}
+The single-interval free-particle decoder provides the independent discrepancy baseline
+\begin{equation}
+ p_K^F(\mathbf y_{p,k}\mid\mathcal H_{p,k},\mathbf V)
+ =\mathcal N_2\left(\mathbf y_{p,k};\bm\mu^F_{p,k}(\mathbf V),
+                  \sigma_{F,K}(U)^2I_2\right).
+ \label{eq:freelikelihood}
+\end{equation}
+The scales $U\Delta t\,\sigma_{r,K}$, $r\in\{C,F\}$, represent displacement discrepancy, including spatial filtering, frozen coefficients and velocity initialization. They are not interpreted as camera localization noise alone. A free particle predominantly constrains the normal component through drag, but it retains dependence on superfluid acceleration. Captured particles supply an additional dependence on superfluid velocity through Magnus force, subject to uncertainty in their vortex variables. Equation~\eqref{eq:freelikelihood} is replaced in the inverse objective by the following segment-level model; it is not multiplied as an independent density at every time step.
+
+For a stable free-particle segment containing $m$ increments, let $\mathbf e_{p,a}$ collect the residuals $y_{p,k,a}-\mu^F_{p,k,a}$ for Cartesian axis $a\in\{x,y\}$. A zero-mean random intercept is marginalized rather than estimated separately for each particle:
+\begin{equation}
+ e_{p,k,a}=b_{p,a}+\epsilon_{p,k,a},\qquad
+ b_{p,a}\sim\mathcal N(0,\sigma_F^2\beta_a),\qquad
+ \epsilon_{p,k,a}\overset{\rm iid}{\sim}\mathcal N(0,\sigma_F^2).
+ \label{eq:randombias}
+\end{equation}
+Consequently,
+\begin{equation}
+ C_{p,a}=\sigma_F^2(I_m+\beta_a\mathbf1\mathbf1^T),\qquad
+ \ell_p^F=\frac{1}{2m}\sum_{a=x,y}
+ \left[\mathbf e_{p,a}^TC_{p,a}^{-1}\mathbf e_{p,a}
+       +\log\det C_{p,a}+m\log(2\pi)\right].
+ \label{eq:correlatedfree}
+\end{equation}
+The calibrated values are $\beta_x=0.129478$ and $\beta_y=1.423373$. Compared with independent errors at the same $\sigma_F$, precision along the constant-in-time direction is reduced by $1/(1+m\beta_a)$; orthogonal directions are unchanged. This avoids treating a persistent discrepancy as repeated independent evidence, but also weakens evidence for a real field perturbation with the same response. It neither changes the decoder mean nor identifies the physical origin of the discrepancy. Captured segments retain $\ell_p^C=-m^{-1}\sum_k\log p_{\theta,12}^C(\mathbf y_{p,k}\mid\cdots)$ without a new temporal correction. These are conditional/composite observation scores rather than a complete generative model of raw tracks and measurement noise.
+
+The continuous integral in \eqref{eq:capturedlikelihood} is evaluated by tensor-product Gauss--Hermite quadrature. Let $\bm\xi_\ell,w_\ell$ be nodes and normalized weights for a standard two-dimensional Gaussian. Then
+\begin{equation}
+ \begin{split}
+ p_{\theta,K}^C(\mathbf y\mid\cdots)\simeq
+ \sum_{q,\ell}\pi_{\theta,q}w_\ell\,
+ \mathcal N_2\big(&\mathbf y;
+ \bm\mu^C(q,\bm\mu_{\theta,q}+C_{\theta,q}\bm\xi_\ell;\mathbf V),
+ \sigma_{C,K}^2I_2\big).
+ \end{split}
+ \label{eq:quadrature}
+\end{equation}
+The logarithm of this sum is evaluated stably. The quadrature order is increased for validation and numerical checks. Field derivatives pass through both the physical displacement map and the field-dependent distribution in \eqref{eq:latentdensity}, even after the network weights have been frozen.
+
+\subsection{Training, resolution matching and calibration}
+\label{sec:training}
+
+The synthetic cases are separated by imposed mean normal-fluid speed, as listed in table~\ref{tab:split}. The available training and validation sets contain $20\,868$ and $1744$ stable captured-interval samples, respectively. These are correlated samples from a finite number of trajectories, not independent realizations of turbulence. The $10\,\mathrm{mm\,s^{-1}}$ test case lies above the largest training speed.
+\begin{table}[htbp]
+ \centering
+ \caption{Case allocation for the conditional observation model. Speeds are in $\mathrm{mm\,s^{-1}}$.}
+ \label{tab:split}
+ \begin{tabular}{ll}
+ \toprule
+ Allocation & Mean normal-fluid speeds\\
+ \midrule
+ Training & $0.5,\ 1,\ 2,\ 2.5,\ 3,\ 5,\ 8.5$\\
+ Validation & $6.5$\\
+ Test & $1.5,\ 4,\ 10$\\
+ \bottomrule
+ \end{tabular}
+\end{table}
+
+Training uses saved circulation signs $q_i^*$ and anchor offsets $\mathbf d_i^*$. The filtered reference fields supply the conditions and forces needed to evaluate the displacement map. Draw $K$ uniformly from $\mathcal K=\{2,4,8,12,16,18\}$ and use the same projection $P_K\mathbf V_i^*$ in the network conditions and the physical displacement map. The objective is
+\begin{equation}
+ \begin{split}
+ \mathcal L_{\rm train}(\theta)=\frac1N\sum_{i=1}^N
+ \mathbb E_{K\sim\mathcal U(\mathcal K)}\big[&
+ -\log p_\theta(q_i^*,\mathbf d_i^*\mid
+                  \mathcal H_i,\mathbf c_i(P_K\mathbf V_i^*))\\
+ &-0.1\log p_{\theta,K}^C(\mathbf y_i\mid
+                  \mathcal H_i,P_K\mathbf V_i^*)\big].
+ \end{split}
+ \label{eq:trainingloss}
+\end{equation}
+The first term fits vortex variables; the second fits their effect on observed displacement, using a fixed normalized training discrepancy of $0.3$. One resolution is sampled per physical sample per epoch; the six views do not constitute six independent observations. The model receives no explicit $K$ label. Reference velocities are required as conditions and physical inputs even though they are not output targets. This does not guarantee generalization to arbitrary incorrect candidate fields encountered during inversion.
+
+The current network is a bounded continuation of the existing high-band checkpoint, not a from-scratch fit. Two seeds use AdamW with initial learning rate $3\times10^{-5}$ and batches of $512$. Selection minimizes the mean reserved validation objective at $K=12,16,18$, with epoch zero eligible. The two runs complete $13$ and $14$ epochs ($533$ and $574$ updates), selecting epochs $1$ and $2$; the second supplies the single checkpoint used in every reconstruction. Early stopping after twelve epochs without improvement is not a convergence certificate. Training and validation integration use $32$ and $64$ Sobol samples, respectively; inverse evaluation uses the Gaussian quadrature described above. Historical reuse of these cases during development precludes interpreting the present tests as new blind generalization trials.
+
+After training, calibration adjusts the sign probabilities, covariance scale and displacement discrepancy. With network sign scores $\ell_q$, the calibrated latent parameters are
+\begin{equation}
+ \pi_q=\frac{e^{\ell_q/T_{\rm sign}}}{\sum_{q'}e^{\ell_{q'}/T_{\rm sign}}},
+ \qquad C_q\longmapsto\tau(U)C_q,
+ \qquad
+ \tau(U)=\operatorname{clip}\left(e^{a_\tau+b_\tau\log(U/U_*)},0.25,4\right),
+ \label{eq:latentcalibration}
+\end{equation}
+where $T_{\rm sign}$ is a shared classification-temperature parameter, distinct from the helium temperature. The latent calibration is shared across resolutions, while the discrepancy law is fitted separately for each particle class and $K$:
+\begin{equation}
+ \sigma_{r,K}(U)=\operatorname{clip}
+ \left(e^{a_{r,K}+b_{r,K}\log(U/U_*)},0.015,1.5\right).
+ \label{eq:noisecalibration}
+\end{equation}
+Calibration uses reserved time windows from training cases, with choices selected on validation data. Neither synthetic test cases nor experimental trajectories are used for fitting these parameters. Discrepancy laws are calibrated at $K=2,4,8,12$; the current periodic inverse uses the $K=12$ law throughout its initial-control continuation because its forward model remains at $K=12$. The latent calibration is shared. Free-particle segment residuals are rescaled by the updated noise law, and the correlated model is selected against $\beta_x=\beta_y=0$ on validation segments. The experimental calculation retains its previously fixed discrepancy laws and transfers the same $\beta_a$; this is not experimental noise calibration. All these parameters remain fixed during inversion.
+
+\subsection{Resolved dynamics and boundary-compatible representation}
+\label{sec:discretization}
+
+The fields inferred in a window evolve under the prescribed model
+\begin{equation}
+ \begin{aligned}
+ \partial_t\mathbf V_n+(\mathbf V_n\cdot\nabla)\mathbf V_n
+ &=-\nabla\Pi_n+\nu_n\nabla^2\mathbf V_n
+   +\rho_n^{-1}\mathbf F_{ns}+\mathbf g_n,\\
+ \partial_t\mathbf V_s+(\mathbf V_s\cdot\nabla)\mathbf V_s
+ &=-\nabla\Pi_s+\nu_s^{\rm eff}\nabla^2\mathbf V_s
+   -\rho_s^{-1}\mathbf F_{ns}+\mathbf g_s,
+ \end{aligned}
+ \label{eq:reconstructionPDE}
+\end{equation}
+together with \eqref{eq:isotropicfriction} and \eqref{eq:logvinen}. No independent mutual-friction correction or learned fluid closure is fitted. The periodic reconstruction retains $\nu_s^{\rm eff}=\alpha\kappa$ as an effective resolved-scale diffusion, not a molecular superfluid viscosity. The channel calculation uses $\nu_s^{\rm eff}=0$, while retaining normal-fluid viscosity and mutual-friction dissipation. These are explicit domain-dependent physical assumptions within the same observation and optimization version, not case-dependent choices between correlation models.
+
+For a periodic domain, represent velocity fluctuations by divergence-free Fourier modes. For a channel, use a streamfunction basis compatible with the walls. In either case, write
+\begin{equation}
+ \mathbf V_f(\mathbf x,t)=\mathbf V_f^0(\mathbf x)
+       +\sum_{i=1}^{d_{f,K}}a_{f,i}(t)\mathbf b_{f,i}(\mathbf x),
+ \qquad
+ \chi(\mathbf x,t)=\sum_j a_{L,j}(t)\varphi_j(\mathbf x).
+ \label{eq:fieldexpansion}
+\end{equation}
+The known backgrounds $\mathbf V_f^0$ have the prescribed fluxes, and the velocity bases have zero mean flux. The periodic spaces retain wavevectors with $\|\mathbf k\|_\infty\leq K$. The $K=2$ space has $24$ real coefficients per component fluid.
+
+Let $\langle\mathbf a,\mathbf b\rangle_\Omega=|\Omega|^{-1}\int_\Omega\mathbf a\cdot\mathbf b\,d\Omega$. For a divergence-free test function with zero normal velocity at a solid wall,
+\begin{equation}
+ \langle\mathbf b_i,\nabla\Pi_f\rangle_\Omega
+ =-\langle\nabla\cdot\mathbf b_i,\Pi_f\rangle_\Omega
+  +\frac1{|\Omega|}\int_{\partial\Omega}\Pi_f\mathbf b_i\cdot\mathbf n\,dS
+ =0,
+ \label{eq:pressureprojection}
+\end{equation}
+where periodic contributions cancel. Pressure is removed from the modal dynamics by projection; it is not assumed to be zero. The mean drive is treated separately. With $\mathsf M_{f,ij}=\langle\mathbf b_{f,i},\mathbf b_{f,j}\rangle_\Omega$, the velocity coefficients satisfy
+\begin{equation}
+ \sum_j\mathsf M_{f,ij}\dot a_{f,j}
+ =-\langle\mathbf b_{f,i},(\mathbf V_f\cdot\nabla)\mathbf V_f\rangle_\Omega
+   +\nu_f\langle\mathbf b_{f,i},\nabla^2\mathbf V_f\rangle_\Omega
+   +\frac{\epsilon_f}{\rho_f}\langle\mathbf b_{f,i},\mathbf F_{ns}\rangle_\Omega,
+ \label{eq:galerkinmomentum}
+\end{equation}
+with $\epsilon_n=1$, $\epsilon_s=-1$ and $\nu_s=\nu_s^{\rm eff}$. Background contributions are included when evaluating these terms. The channel advection load is assembled in the skew-symmetric form
+\begin{equation}
+ C_i(\mathbf V)=\frac12\left[
+ \langle\mathbf b_i,(\mathbf V\cdot\nabla)\mathbf V\rangle_\Omega
+ -\langle\nabla\mathbf b_i,\mathbf V\otimes\mathbf V\rangle_\Omega\right],
+ \label{eq:skewadvection}
+\end{equation}
+which reduces artificial kinetic-energy changes from discrete advection.
+
+The experimental local domain is $L_x\times L_y=16\times8\,\mathrm{mm}^2$, with walls at $x=0,L_x$ and periodicity in $y$. The latter is a local-field-of-view approximation, not a measured inlet--outlet condition. The normal background is parabolic, $\mathbf V_n^0=6U r(1-r)\mathbf e_y$, $r=x/L_x$, and the superfluid background is uniform, $\mathbf V_s^0=-(\rho_n/\rho_s)U\mathbf e_y$. These satisfy the required fluxes but are not asserted to be a steady solution of the coupled equations.
+
+For the latest channel basis, let $\xi_x=2x/L_x-1$ and let $P_j$ be a Legendre polynomial. The wall-normal streamfunction factors are
+\begin{equation}
+ \phi_j^n=P_j-\frac{2(2j+5)}{2j+7}P_{j+2}
+                  +\frac{2j+3}{2j+7}P_{j+4},
+ \qquad \phi_j^s=P_j-P_{j+2}.
+ \label{eq:wallbasis}
+\end{equation}
+Multiplying these by periodic Fourier functions of $y$ and taking $\mathbf b=(\partial_y\psi,-\partial_x\psi)$ gives divergence-free velocity bases. The normal factors satisfy $\phi_j^n=\partial_x\phi_j^n=0$ at both walls, enforcing no slip. The superfluid factors satisfy $\phi_j^s=0$, enforcing impermeability without prescribing tangential velocity or wall shear. Since the primary channel candidate sets $\nu_s^{\rm eff}=0$, it does not require a tangential condition for a superfluid viscous operator. Comparisons retaining positive effective diffusion and a free tangential trace are finite-dimensional sensitivity studies unless a separate tangential wall law is supplied.
+
+Channel modes are mass-orthonormalized and ordered by velocity-gradient energy within each added band, preserving previously included subspaces. This ordering is not a global Stokes eigenbasis. Each fluid has $(K+1)(2K+1)$ channel velocity modes, namely $15,45,153,325$ at $K=2,4,8,12$. Accordingly, equal $K$ in periodic and channel calculations does not imply an equal number of modes or an identical physical bandwidth.
+
+\subsection{Initial-state inversion and gradual modal refinement}
+\label{sec:inversion}
+
+Let $\mathbf S=(\mathbf a_n,\mathbf a_s,\mathbf a_L)$ collect the Galerkin coefficients. Projection of \eqref{eq:logvinen} and \eqref{eq:reconstructionPDE} gives $\dot{\mathbf S}=\mathcal F_K(\mathbf S)$. The forward space is fixed at $K=12$. Two fourth-order Runge--Kutta substeps advance each $\Delta t=1\,\mathrm{ms}$ output interval:
+\begin{equation}
+ \mathbf S_0=(\mathbf a_n(\bm\zeta_0),\mathbf a_s(\bm\zeta_0),\mathbf0),
+ \qquad
+ \mathbf S_{k+1}=\mathcal R_{\Delta t,K}(\mathbf S_k).
+ \label{eq:stateevolution}
+\end{equation}
+Only one pair of initial velocity coordinates $\bm\zeta_0$ is optimized for two observation windows. The initial logarithmic density is zero, and all later states follow from the forward dynamics, including intervals with no observations. No separate initial condition is introduced at the second window. Periodic windows are $[5,9]$ and $[13,17]\,\mathrm{ms}$, sharing the $5\,\mathrm{ms}$ initial state; channel windows are two contiguous $12\,\mathrm{ms}$ blocks. The procedure is a strong-dynamics-constraint variant of four-dimensional variational assimilation. At $K=12$ there are $1248$ periodic initial velocity controls in total; prescribed mean velocities are not controls.
+
+For periodic calculations, $\bm\zeta_f$ denotes the existing dimensionless real Fourier coefficients. For the nonorthogonal channel basis, factor $\mathsf M_f/U^2=L_fL_f^T$ in nested modal order and define
+\begin{equation}
+ \bm\zeta_f=L_f^T\mathbf a_f,\qquad
+ \mathbf a_f=L_f^{-T}\bm\zeta_f,\qquad
+ \frac{\langle|\mathbf V_f-\mathbf V_f^0|^2\rangle_\Omega}{U^2}
+ =\|\bm\zeta_f\|^2.
+ \label{eq:energycoordinates}
+\end{equation}
+The subsequent within-band orthogonal rotations preserve this energy identity. Regularization in these coordinates therefore constrains channel velocity energy rather than the size of coefficients in an arbitrary basis.
+
+Let $\mathcal P_{\rm fit}$ contain the fitted particle--window segments, $N_{\rm seg}=|\mathcal P_{\rm fit}|$, and $\tau_p$ be the duration covered by a segment's likelihood. With $\Delta t_0=1\,\mathrm{ms}$, define $\ell_p=-(\Delta t_0/\tau_p)\log\widetilde p_p$. Here $\widetilde p_p$ is the product of captured conditional mixture densities, or the correlated free-segment Gaussian. Minimize
+\begin{equation}
+ \mathcal J(\bm\zeta_0)=
+ \frac{0.08}{N_{\rm seg}}\sum_{p\in\mathcal P_{\rm fit}}
+ \ell_p\bigl(\mathbf V(\bm\zeta_0)\bigr)
+ +R_{\rm base}+R_{\rm high}.
+ \label{eq:inverseobjective}
+\end{equation}
+Both classes enter the same segment average with their observed frequencies, not equal aggregate training weights. Within each segment the duration normalization avoids treating a longer segment as proportionally more independent information. Missing classes are omitted; held-out particles are never borrowed to supply them. No particle-mean displacement penalty is added.
+
+The baseline regularizers used in the two domains are
+\begin{equation}
+ \begin{aligned}
+ R_{\rm base}^{\rm per}
+ &=\frac{0.003}{24}\operatorname{mean}_{k,f}\|\mathbf a_{f,k}\|^2
+   +\frac{0.03}{24}\operatorname{mean}_{k,f}
+        \|\mathbf a_{f,k+1}-\mathbf a_{f,k}\|^2,\\
+ R_{\rm base}^{\rm ch}
+ &=0.002\sum_{f=n,s}\|\bm\zeta_{f,0}\|^2.
+ \end{aligned}
+ \label{eq:baseregularization}
+\end{equation}
+The periodic difference penalty uses sampling increments without division by $\Delta t$. Its numerical weight is consequently tied to the $1\,\mathrm{ms}$ inference interval.
+
+Initial controls are activated through orders $k=2\to4\to8\to12$ within the fixed $K=12$ forward system. At stage $k$, $\bm\zeta_0=M_k\bm\vartheta$, where $M_k$ selects the active initial modes. Nonlinear evolution may populate any mode in the forward space. Previously active coefficients remain adjustable. The current implementation has neither a cross-stage anchoring penalty nor the historical hard high-mode amplitude cap.
+
+All initial modes above the root $K=2$ space receive an additional penalty
+\begin{equation}
+ R_{\rm high}=\frac{0.03}{d_2}\operatorname{mean}_{f=n,s}
+       \sum_{j\in H}w_{f,j}^2\zeta_{f,j,0}^2,
+ \qquad d_2=\begin{cases}24,&\text{periodic},\\15,&\text{channel},\end{cases}
+ \label{eq:highregularization}
+\end{equation}
+where $w_{f,j}=(|\mathbf k_j|/2)^2$ for periodic real Fourier modes. In the latest channel basis, $w_{f,j}$ is the velocity-gradient Rayleigh quotient of mode $j$ divided by the largest quotient in the root band. Its square supplies the analogous fourth-power penalty in gradient scale. These channel quantities are regularization weights and need not be eigenvalues of the full Laplacian.
+
+The spectral penalty is a regularizer, not an estimated covariance or proof that high modes are unobservable. Its coefficients are fixed across current runs with the stated domain-dependent basis normalization.
+
+Gradients are obtained by differentiating the discrete dynamics and the observation model. To see the dependence on the initial state, let $\mathbf g_k$ collect all explicit derivatives of the window objective with respect to $\mathbf S_k$, including terms involving adjacent frames. The discrete adjoint is
+\begin{equation}
+ \bm\lambda_N=\mathbf g_N,\qquad
+ \bm\lambda_k=\mathbf g_k+
+    D\mathcal R_{\Delta t,K}(\mathbf S_k)^T\bm\lambda_{k+1},
+ \qquad
+ \nabla_{\bm\zeta_0}\mathcal J
+ =\left(\frac{\partial\mathbf S_0}{\partial\bm\zeta_0}\right)^T\bm\lambda_0
+   +\nabla_{\bm\zeta_0}R_{\rm direct}.
+ \label{eq:discreteadjoint}
+\end{equation}
+Here $R_{\rm direct}$ contains regularization terms depending directly on initial coordinates, with each term counted once. The fluid is propagated forward; only the adjoint traverses the window backward. Derivatives include both the force decoder and the candidate-field dependence of the frozen network. Complete-chain directional finite-difference checks pass for all five current blocks. Adam updates the masked initial coordinates, and validation trajectories select the returned iterate.
+
+Each case uses the same two-start policy. One joint fit begins from zero fluctuation coefficients. An independent first-window fit supplies the initial state for a second joint fit; it does not introduce another control at the later window. Validation averages scores equally over available state--window groups. The seeded candidate replaces the cold candidate only if this score improves and each particle class's mean paired degradation is no larger than one paired standard error, aggregated by physical particle. This heuristic does not guarantee non-degradation of field error.
+
+The nominal cold-stage budgets are $30$, $30$, $40$ and $160$ updates, with respective initial learning rates $0.012$, $0.006$, $0.004$ and $0.002$. Seeded refinement permits $120$ updates. CPU limits are $300$, $225$ and $150$ seconds for joint, independent-first-window and seeded fits. Periodic runs complete their update budgets; channel runs hit time limits and are not certified stationary. No field truth is used for inversion or selection in this round. Refinement reuses observations rather than adding independent data. The weighted composite objective defines a regularized estimate, not a posterior with calibrated field confidence intervals.
+
+\subsection{Assessment and application to experimental trajectories}
+\label{sec:assessment}
+
+Physical particle identities are assigned consistently across both windows and classes by their remainder modulo five: remainders $2,3,4$ for fitting, $1$ for validation and $0$ for testing. Window bookkeeping identifiers do not change this split. Neighboring particles and repeated increments can still be correlated. Stable synthetic captured intervals are selected using known attachment and state information. In experiments, $g1,g3$ are captured and $g2$ is free. Classification is supplied, not inferred jointly with the fields.
+
+Synthetic field error is computed on the common coarse grid. For either fluid, the component-wise root-mean-square error is
+\begin{equation}
+ E_f=\left[\frac{1}{2N_tN_g}\sum_{k=1}^{N_t}\sum_{i=1}^{N_g}
+   |\widehat{\mathbf V}_{f,k,i}-\mathbf V^*_{f,k,i}|^2\right]^{1/2},
+ \label{eq:fieldRMS}
+\end{equation}
+where the factor two averages over planar velocity components. The full-reference error and the error relative to its modal projection are reported separately. For an orthogonal projection $P_K$ in the assessment inner product,
+\begin{equation}
+ \|\widehat{\mathbf V}_K-\mathbf V^*\|^2
+ =\|\widehat{\mathbf V}_K-P_K\mathbf V^*\|^2
+   +\|(I-P_K)\mathbf V^*\|^2.
+ \label{eq:projectionerror}
+\end{equation}
+Increasing $K$ can reduce representation error while leaving the inference error unchanged or larger. Higher modal resolution alone therefore does not establish recovery of smaller scales.
+
+Displacement assessment uses mean-prediction error, negative log likelihood and estimated coverage of highest-density regions. A multimodal predictive mean can fall between likely branches, so mean error and probability score evaluate different properties. Numerical assessment includes likelihood-quadrature refinement, time-step refinement, pressure-projection and boundary checks, preservation of mean mass flux, positivity of line density, and directional gradient checks. These verify the numerical implementation within the chosen model; they do not establish equivalence between the point-vortex source dynamics and the hydrodynamic reconstruction.
+
+The experimental case has $T=2\,\mathrm K$ and $Q_h=217\,\mathrm{mW\,cm^{-2}}$, giving $U\simeq7.466\,\mathrm{mm\,s^{-1}}$. The camera rate is $180$ frames per second. Two blocks starting at camera frames $261$ and $505$ are reconstructed, each spanning $24\,\mathrm{ms}$. They are different periods of one experimental record, not independent experimental conditions. Captured segments retain degree-two Savitzky--Golay smoothing (up to seven native frames, five for short segments) and shape-preserving cubic interpolation to $1\,\mathrm{ms}$. Their scores are retrospective composite constraints, not independent raw-camera observations or causal forecasts.
+
+Free-particle likelihoods instead use original camera displacements over $\Delta t_{\rm cam}=1/180\,\mathrm s$. A preceding raw secant initializes the velocity and causal fixed-path pilot. The same linear drag response is composed over full and fractional PDE output intervals without resetting velocity at unobserved intermediate times. The target endpoint does not supply its own input. Let $W_{ij}$ be camera interval $i$'s overlap with model interval $j$, divided by $\Delta t_0=1\,\mathrm{ms}$. With raw displacements normalized by $U\Delta t_0$, use
+\begin{equation}
+ C^{\rm cam}_{p,a}=\sigma_{F,\rm CF}^2
+ \left[WW^T+\beta_a(W\mathbf1)(W\mathbf1)^T\right].
+ \label{eq:nativecovariance}
+\end{equation}
+The Gaussian negative log density is divided by $\mathbf1^TW\mathbf1$, the observed duration in milliseconds. For $W=I$, the mean and score reproduce the $1\,\mathrm{ms}$ free operator numerically. This covariance is a transferred discrepancy model, not a derivation of camera localization noise; uncertainty in the initial secant and shared-endpoint localization errors are not separately calibrated. A $1\,\mathrm{ms}$ PDE output cadence does not establish $1\,\mathrm{ms}$ experimental temporal identifiability.
+
+Experimental displacement errors are assessed over the original camera intervals along the observed paths. No experimental reference velocity field is available, and the network is not retrained on these trajectories. Velocity profiles, spectra and inferred vortex-variable distributions are consequently model-conditioned diagnostics. Improved agreement with withheld displacements cannot by itself prove a more accurate full field, identify three-dimensional vortex topology, or establish experimental probability calibration. The available test trajectories have also been examined during earlier development, so the present experimental comparison is exploratory rather than a new blind validation.
+
+\section{Results and scope of validation}
+\label{sec:results}
+
+\subsection{Periodic field errors and representation error}
+
+Table~\ref{tab:currenterrors} evaluates the current unified model on all thirteen output frames from $5$ to $17\,\mathrm{ms}$, including the unobserved gap. The reference is constructed by conservative cell integration of the periodic piecewise-linear nodal source on the common $40\times40$ grid; modal phases are aligned to cell centres. These are short-window reconstructions, not reconstructions of the full $100\,\mathrm{ms}$ recordings.
+\begin{table}[htbp]
+ \centering
+ \caption{Current periodic component RMS errors. Each pair lists normal/superfluid values. Relative errors divide by the RMS reference fluctuation about its prescribed uniform mean, not by the total velocity.}
+ \label{tab:currenterrors}
+ \begin{tabular}{rrrr}
+ \toprule
+ $U$ & Full error & Truncation error & Relative fluctuation error\\
+ $(\mathrm{mm\,s^{-1}})$ & $(\mathrm{mm\,s^{-1}})$ & $(\mathrm{mm\,s^{-1}})$ & $(\%)$\\
+ \midrule
+ $1.5$ & $0.0966/0.3153$ & $0.0394/0.1089$ & $15.1/47.6$\\
+ $4$   & $0.5124/0.7934$ & $0.2173/0.2885$ & $34.4/45.1$\\
+ $10$  & $5.6640/6.3233$ & $0.7005/0.7999$ & $57.2/63.2$\\
+ \bottomrule
+ \end{tabular}
+\end{table}
+
+The orthogonal decomposition \eqref{eq:projectionerror} holds numerically. Truncation accounts for approximately $1.5$--$18\%$ of the squared errors; most error therefore lies within the already represented modal space. This does not prove that increasing order can never help optimization, but it excludes missing bandwidth as the sole explanation. The truncation values are representation lower bounds, not attainable error guarantees under the PDE and observations.
+
+Relative to the preceding free-correlation version under the same reference convention, the $1.5$ and $4\,\mathrm{mm\,s^{-1}}$ field errors change by only $0.05$--$1.30\%$, slightly upwards. At $1.5\,\mathrm{mm\,s^{-1}}$, both held-out particle-class score differences exceed the predeclared one-standard-error guard; this is a failed acceptance rule, not proof of statistically significant deterioration. At $10\,\mathrm{mm\,s^{-1}}$, the fitted particle set has no free-state segments. Its missing complementary constraint and extrapolation beyond the largest training speed qualify the poor result, but do not uniquely explain it.
+
+\subsection{Experimental displacement consistency}
+
+\begin{table}[htbp]
+ \centering
+ \caption{CF raw-camera displacement mean vector RMS in $\mu\mathrm m$. Captured predictions are integrated retrospectively from the interpolated operator; free predictions use the causal native-interval operator. Backgrounds are forward predictions, not measured field truth.}
+ \label{tab:cfcurrent}
+ \begin{tabular}{lrrr}
+ \toprule
+ Block & Prediction & Captured & Free\\
+ \midrule
+ $261$ & Reconstruction & $16.491$ & $20.375$\\
+       & Background     & $23.561$ & $24.107$\\
+ $505$ & Reconstruction & $29.986$ & $19.930$\\
+       & Background     & $30.635$ & $14.695$\\
+ \bottomrule
+ \end{tabular}
+\end{table}
+
+The first block improves both mean-error diagnostics over background, but the second worsens the free-particle error. The test sets contain only $4/6$ captured/free physical particles in the first block and $5/3$ in the second. Particle mean error is not interchangeable with mixture likelihood, and neither is a field-error measurement. Experimental profiles and spectra are therefore model-conditioned reconstructions, not validated experimental two-fluid ground truth.
+
+\subsection{Historical comparisons and numerical checks}
+
+Earlier matched-budget tests supported sharing one initial state across windows: it improved both component errors over independently inferred windows in the tested $4\,\mathrm{mm\,s^{-1}}$ case. Extending temporal correlation to captured particles later improved some periodic errors but worsened CF free-state predictions. Those results motivate the present common free-only correlation baseline; they are not numerical results of the current retraining. A common version is achieved, but uniform superiority over all historical methods is not.
+
+Complete-chain gradient checks, particle-split isolation and output-file readback pass in the current run. Halving the internal time step changes the evaluated fields by less than $0.01\,\mathrm{mm\,s^{-1}}$, far below their reconstruction errors. This supports consistency of the tested numerical evaluation; it does not validate the reduced physical closure or establish global optimization convergence. The zero-particle wall/viscosity figure group is a forward sensitivity comparison, not four additional particle-constrained reconstructions.
+
+\section{Identifiability and limitations}
+\label{sec:limitations}
+
+\subsection{Information about the two fields}
+
+Let $a_0$ denote initial velocity controls and $\mathcal S(a_0)$ their PDE trajectory. Under a properly specified observation law, statistical identification would require
+\begin{equation}
+ p(Y\mid\mathcal S(a_0))=p(Y\mid\mathcal S(b_0))
+ \quad\Longrightarrow\quad a_0=b_0
+ \label{eq:identifiability}
+\end{equation}
+on the admissible control set. A unique regularized optimizer does not prove this implication. The present composite score is not a full raw-track generative law, and no complete information-spectrum or uniqueness proof is available.
+
+Locally, the particle response has the form
+\begin{equation}
+ \delta Y=A_n\delta\mathbf V_n+A_s\delta\mathbf V_s+B\delta z.
+ \label{eq:localconfounding}
+\end{equation}
+Field perturbations whose responses can be nearly offset by latent-force changes are weakly distinguished unless constrained by the latent law or additional observations. In a local Gaussian approximation with independent latent and measurement errors, marginalization gives $\Sigma_{\rm eff}=\Sigma_\epsilon+B\Sigma_zB^T$. A learned latent distribution supplies statistical assumptions, not another independent measurement. This does not imply exact non-identifiability after PDE coupling and marginalization, and counting two observed position components against four velocity components is not a valid uniqueness argument.
+
+Earlier frozen-model diagnostics provide positive evidence for superfluid information: replacing reference initial superfluid fluctuations by their uniform value while retaining the normal initial field worsened captured held-out NLL by about $4.244$ and $7.786$ in the $4$ and $1.5\,\mathrm{mm\,s^{-1}}$ cases. Free-state changes were much smaller. These historical scores are within-case diagnostics, not information measures comparable across speeds. They reject the claim that captured trajectories contain no superfluid information, without establishing recovery of every superfluid mode. Previously tested low-rank mean-response subspaces also left substantial response energy outside them; they were not a complete identifiable subspace or a full likelihood Fisher analysis.
+
+\subsection{Persistent discrepancy and inverse bias}
+
+Let $a_\star$ be a reference initial state and write the sampled data locally as $Y=\mathcal G(a_\star)+b+\epsilon$, where $\mathcal G$ includes forward dynamics and the observation map. The discrepancy $b$ includes source-to-coarse PDE error, force-model mismatch and sampling approximations. For a local Gaussian objective with constant covariance $\Sigma$, define $J=D\mathcal G(a_\star)$ and $\Lambda=\nabla^2R(a_\star)$. Linearization gives
+\begin{equation}
+ \widehat a-a_\star\simeq
+ (J^T\Sigma^{-1}J+\Lambda)^{-1}
+ \left[J^T\Sigma^{-1}(b+\epsilon)-\nabla R(a_\star)\right].
+ \label{eq:biaslinearization}
+\end{equation}
+This is a diagnostic approximation, not an exact identity for the mixture objective. It shows how persistent force error aligned with a field-sensitive direction becomes field bias. Weakly constrained directions may amplify it, while stronger regularization trades variance against bias. Correlation downweighting does not remove a nonzero discrepancy mean.
+
+Historical reference-initial-state to reconstructed-initial-state line tests, with every candidate replayed through the same PDE, showed decreasing training objective but worsening held-out score. This supports finite-sample overfitting and objective misalignment; it neither attributes all error to physical discrepancy nor proves that every optimization basin has been explored. The reference-conditioned network is not established to absorb all superfluid responses, and a new latent architecture alone is not an evidenced remedy.
+
+The attainable model-class error also depends on the solution set
+\begin{equation}
+ \mathcal M_K=\{\mathcal S(a_0):a_0\in\mathcal A_K\},\qquad
+ E_{\rm dyn}=\inf_{a_0\in\mathcal A_K}
+       \|\mathcal S(a_0)-P_K\mathbf V^*\|.
+ \label{eq:dynamicfloor}
+\end{equation}
+If the coarse reference is outside this set, changing the initial state cannot make the full trajectory exact. $E_{\rm dyn}$ has not been computed globally. A single reference-initial-state replay gives one feasible error, not this lower bound. Longer joint windows increase observational coupling but can accumulate dynamical mismatch.
+
+\subsection{What can be claimed}
+
+The observed error levels in table~\ref{tab:currenterrors} establish short-window recovery of some coarse two-fluid structure under the supplied mean fluxes, geometry, particle classes and closures. They are empirical achieved errors, not theoretical limits or forecasts for unseen realizations. The normal component is better recovered relative to its fluctuations in the tested lower-speed cases; the superfluid remains substantially less accurate. The high-speed case and both CF blocks do not establish uniformly reliable reconstruction.
+
+Modes outside the finite basis are not represented. Weak-response and poorly sampled directions rely more on dynamics and regularization; their lack of reliable recovery is not a proof that they are mathematically unobservable. Mean fluxes and initial $L$ are prescribed, pressure is eliminated from the velocity solve, and arbitrary three-dimensional vortex topology is outside the model. Particle predictive coverage is not a field posterior confidence interval. No justified universal maximum identifiable order or final error percentage follows from the existing tests.
+
+\section{Conclusion}
+
+A physically decoded conditional latent model, complementary free and captured observations, and a shared-initial-state momentum inversion provide a reproducible route to coarse two-fluid reconstruction. The present evidence supports conditional capability rather than all-case stability. Most measured error is already inside the retained modal space. The immediate priorities are to distinguish independently supported field directions from discrepancy-sensitive ones, align both experimental particle classes with native sampling, and assess improvements on withheld trajectories and time blocks. Increasing network size, modal order or optimization length alone does not resolve these distinctions and can improve fitting without improving the reconstructed field.
+
+\begin{thebibliography}{99}
+
+\bibitem[Zhang \& Van Sciver(2005)]{ZhangVanSciver2005}
+Zhang, T. \& Van Sciver, S. W. 2005
+Large-scale turbulent flow around a cylinder in counterflow superfluid $^4$He (He (II)).
+\textit{Nature Physics} \textbf{1}, 36--38.
+\href{https://doi.org/10.1038/nphys114}{doi:10.1038/nphys114}.
+
+\bibitem[Bewley et~al.(2006)]{Bewley2006}
+Bewley, G. P., Lathrop, D. P. \& Sreenivasan, K. R. 2006
+Visualization of quantized vortices.
+\textit{Nature} \textbf{441}, 588.
+\href{https://doi.org/10.1038/441588a}{doi:10.1038/441588a}.
+
+\bibitem[Mastracci et~al.(2019)]{Mastracci2019}
+Mastracci, B., Bao, S., Guo, W. \& Vinen, W. F. 2019
+Particle tracking velocimetry applied to thermal counterflow in superfluid $^4$He:
+motion of the normal fluid at small heat fluxes.
+\textit{Physical Review Fluids} \textbf{4}, 083305.
+\href{https://doi.org/10.1103/PhysRevFluids.4.083305}{doi:10.1103/PhysRevFluids.4.083305}.
+
+\bibitem[Mineda et~al.(2013)]{Mineda2013}
+Mineda, Y., Tsubota, M., Sergeev, Y. A., Barenghi, C. F. \& Vinen, W. F. 2013
+Velocity distributions of tracer particles in thermal counterflow in superfluid $^4$He.
+\textit{Physical Review B} \textbf{87}, 174508.
+\href{https://doi.org/10.1103/PhysRevB.87.174508}{doi:10.1103/PhysRevB.87.174508}.
+
+\bibitem[Galantucci et~al.(2015)]{Galantucci2015}
+Galantucci, L., Sciacca, M. \& Barenghi, C. F. 2015
+Coupled normal fluid and superfluid profiles of turbulent helium II in channels.
+\textit{Physical Review B} \textbf{92}, 174530.
+\href{https://doi.org/10.1103/PhysRevB.92.174530}{doi:10.1103/PhysRevB.92.174530}.
+
+\bibitem[Varga et~al.(2014)]{Varga2014}
+Varga, E., Barenghi, C. F., Sergeev, Y. A. \& Skrbek, L. 2014
+Two-dimensional simulation of vortex points and tracer particles in counterflowing He-II.
+\textit{EPJ Web of Conferences} \textbf{67}, 02124.
+\href{https://doi.org/10.1051/epjconf/20146702124}{doi:10.1051/epjconf/20146702124}.
+
+\bibitem[Schwarz(1985)]{Schwarz1985}
+Schwarz, K. W. 1985
+Three-dimensional vortex dynamics in superfluid $^4$He:
+line-line and line-boundary interactions.
+\textit{Physical Review B} \textbf{31}, 5782--5804.
+\href{https://doi.org/10.1103/PhysRevB.31.5782}{doi:10.1103/PhysRevB.31.5782}.
+
+\bibitem[Schwarz(1988)]{Schwarz1988}
+Schwarz, K. W. 1988
+Three-dimensional vortex dynamics in superfluid $^4$He:
+homogeneous superfluid turbulence.
+\textit{Physical Review B} \textbf{38}, 2398--2417.
+\href{https://doi.org/10.1103/PhysRevB.38.2398}{doi:10.1103/PhysRevB.38.2398}.
+
+\bibitem[Vinen(1957)]{Vinen1957}
+Vinen, W. F. 1957
+Mutual friction in a heat current in liquid helium II.
+III. Theory of the mutual friction.
+\textit{Proceedings of the Royal Society of London A} \textbf{242}, 493--515.
+\href{https://doi.org/10.1098/rspa.1957.0191}{doi:10.1098/rspa.1957.0191}.
+
+\bibitem[Le Dimet \& Talagrand(1986)]{LeDimetTalagrand1986}
+Le Dimet, F.-X. \& Talagrand, O. 1986
+Variational algorithms for analysis and assimilation of meteorological observations:
+theoretical aspects.
+\textit{Tellus A} \textbf{38}, 97--110.
+\href{https://doi.org/10.3402/tellusa.v38i2.11706}{doi:10.3402/tellusa.v38i2.11706}.
+
+\bibitem[Raissi et~al.(2019)]{Raissi2019}
+Raissi, M., Perdikaris, P. \& Karniadakis, G. E. 2019
+Physics-informed neural networks: a deep learning framework for solving
+forward and inverse problems involving nonlinear partial differential equations.
+\textit{Journal of Computational Physics} \textbf{378}, 686--707.
+\href{https://doi.org/10.1016/j.jcp.2018.10.045}{doi:10.1016/j.jcp.2018.10.045}.
+
+\bibitem[Zhou \& Grauer(2026)]{ZhouGrauer2026}
+Zhou, K. \& Grauer, S. J. 2026
+On the joint estimation of flow fields and particle properties from Lagrangian data.
+\textit{Journal of Fluid Mechanics} \textbf{1041}, A5.
+\href{https://doi.org/10.1017/jfm.2026.11913}{doi:10.1017/jfm.2026.11913}.
+
+\end{thebibliography}
+\end{document}

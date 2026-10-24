@@ -1,0 +1,38 @@
+{
+  "beta": [
+    0.12947826662186407,
+    1.4233731281182114
+  ],
+  "candidates": [
+    {
+      "beta": [
+        0.12947826662186407,
+        1.4233731281182114
+      ],
+      "train": 2.4711014090132375,
+      "validation": 2.3504273161776523
+    },
+    {
+      "beta": [
+        0.0,
+        0.0
+      ],
+      "train": 2.957718081821208,
+      "validation": 2.66143661971765
+    }
+  ],
+  "field_truth_in_inverse": false,
+  "calibration_cases": [
+    "vn0_0005m_s",
+    "vn0_001m_s",
+    "vn0_0025m_s",
+    "vn0_002m_s",
+    "vn0_003m_s",
+    "vn0_005m_s",
+    "vn0_0065m_s",
+    "vn0_0085m_s"
+  ],
+  "source_sha": "115823d1c3258b4d40178c79585cbc2dc37731566176425388b553e98795438b",
+  "noise_recalibrated": true,
+  "CF_noise": "preserved experimental law; not experimentally calibrated correlation"
+}
