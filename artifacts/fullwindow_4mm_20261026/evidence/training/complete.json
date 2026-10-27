@@ -1,0 +1,30 @@
+{
+  "seeds": [
+    {
+      "seed": 261026,
+      "best": -4.338421434164047,
+      "epoch": 224,
+      "last_epoch": 240,
+      "stopping": "epoch_budget_not_proof_of_convergence"
+    },
+    {
+      "seed": 261027,
+      "best": -1.1233012210577726,
+      "epoch": 3,
+      "last_epoch": 60,
+      "stopping": "patience"
+    }
+  ],
+  "selected": {
+    "seed": 261026,
+    "best": -4.338421434164047,
+    "epoch": 224,
+    "last_epoch": 240,
+    "stopping": "epoch_budget_not_proof_of_convergence"
+  },
+  "initialization": "fresh random weights; no legacy checkpoint",
+  "loss": "physical latent NLL + 0.1 fixed-force observation NLL",
+  "field_outputs": false,
+  "conditioning": "reference N40 K12 local slip and gradients; no position/time/PID input",
+  "smoke": false
+}

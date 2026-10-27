@@ -1,0 +1,12 @@
+{
+  "id": "fullwindow_4mm_20261026",
+  "status": "formal_periodic_baseline",
+  "adopted": "2026-10-27",
+  "artifacts": "artifacts/fullwindow_4mm_20261026",
+  "documentation": "docs/FULLWINDOW_BASELINE.md",
+  "source_package": "counterflow_full",
+  "scope": "Periodic 4 mm/s, 5–100 ms single initial state, native 1 ms observations",
+  "cf_model_changed": false,
+  "automatic_promotion_of_new_runs": false,
+  "high_accuracy_or_universal_superiority_claimed": false
+}

@@ -1,0 +1,10 @@
+{
+  "full_run": true,
+  "selected_restart": 1,
+  "acceptance": {
+    "beats_uniform_both_fluids": true,
+    "no_saved_L_clipping": true,
+    "integration_refinement_below_1pct_U": true,
+    "selected_without_target_truth": true
+  }
+}

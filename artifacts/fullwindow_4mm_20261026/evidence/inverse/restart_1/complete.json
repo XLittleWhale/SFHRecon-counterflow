@@ -1,0 +1,7 @@
+{
+  "selected_validation": -1.2994159238102283,
+  "sole_controls": "initial vn and vs coefficients",
+  "PDE_steps": 95,
+  "all_training_intervals": true,
+  "smoke": false
+}

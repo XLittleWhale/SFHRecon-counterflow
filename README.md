@@ -1,5 +1,35 @@
 # Two-fluid counterflow reconstruction
 
+## 当前正式模拟基线（2026-10-27）
+
+训练及模拟算例重建采用 **FullWindow 4 mm/s** 完整 GPU 结果：原始 1 ms 观测、
+5–100 ms 单初态、512 PID、N40/K12/M64，七工况重训、独立 6.5 mm/s 标定、
+动量–Vinen 强约束 4D-Var。网络输出物理符号/锚点分布，只有窗口首帧两流系数被反演。
+
+正式基线的首帧 vn/vs 向量 RMS 为 **0.595727/1.236360 mm/s**，全窗为
+**0.489406/0.891793 mm/s**。这不是高精度或唯一性保证，也不是 CF 模型升级。
+旧 CF 权重和流程保留，不能将其与本次周期结果称为一个已经统一验证的新版本。
+
+- [流程、重训命令、数学边界与完整验收](docs/FULLWINDOW_BASELINE.md)
+- [全部方程与目标函数](src/counterflow_full/MATHEMATICS.md)
+- [冻结模型、首帧、配置及证据](artifacts/fullwindow_4mm_20261026/)
+- [13 组正式结果图（PNG/PDF/SVG）](artifacts/fullwindow_4mm_20261026/figures/)
+
+```bash
+python -m pip install -e '.[test]'
+pytest -q
+python -m counterflow_full.verify --baseline artifacts/fullwindow_4mm_20261026
+```
+
+此验证不需要大数据包，重新推进完整 PDE 并重算已报告误差；完整重训需另备原始模拟数据。
+新增 `src/counterflow_full/` 是当前模拟入口，下面的 `run.py train/invert` 是历史/CF 入口。
+正式快照约 6 MiB；原始场、粒子观测、服务器大数据包和完整运行目录不进入 Git。
+
+## 历史统一基线与保留的 CF 路径
+
+以下说明对应此前发布的统一基线；“唯一入口／统一方法”等表述仅描述该历史流程，
+不能替代上面的正式模拟协议。既有数据清单也仅覆盖历史数据包。
+
 本目录是本项目**唯一的源码发布入口**。只将本目录的受版本管理文件上传 GitHub；上一级的历史 `outputs`、旧脚本和原始数据不属于本仓库。
 
 统一方法：候选场条件化的涡符号/锚点概率网络，捕获态物理混合似然，自由态随机截距相关似然，共享窗口初态，动量–Vinen PDE 正向推进。周期场和 CF 使用相同的网络、优化及选解规则；几何和采样率作为显式物理输入。没有按算例切换方法的开关。

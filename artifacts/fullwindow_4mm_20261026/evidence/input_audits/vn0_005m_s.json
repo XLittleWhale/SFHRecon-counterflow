@@ -1,0 +1,42 @@
+{
+  "total_intervals": 48640,
+  "state_transition_intervals": 2528,
+  "nonfinite_intervals": 0,
+  "valid_intervals": 46112,
+  "unique_pids": 512,
+  "counts": {
+    "free_train": {
+      "intervals": 6938,
+      "pids": 300
+    },
+    "free_validation": {
+      "intervals": 2123,
+      "pids": 99
+    },
+    "free_test": {
+      "intervals": 2185,
+      "pids": 98
+    },
+    "cap_train": {
+      "intervals": 20624,
+      "pids": 306
+    },
+    "cap_validation": {
+      "intervals": 7140,
+      "pids": 103
+    },
+    "cap_test": {
+      "intervals": 7102,
+      "pids": 103
+    }
+  },
+  "case": "vn0_005m_s",
+  "U": 0.005,
+  "anchor_symmetry_max_m": 0.0,
+  "tension_formula_max_N": 2.615812090047145e-14,
+  "tension_snapshot_relative_to_2T": 0.019877710478363345,
+  "tension_snapshot_note": "saved force is final microstep midpoint; geometry label is saved endpoint",
+  "raw_GiB": 1.372255953028798,
+  "source_duration_s": 0.10000000000065512,
+  "metadata_duration_s": 0.004
+}

@@ -1,0 +1,23 @@
+{
+  "captions": {
+    "F_vn_initial": "Rows x/y; columns modal reference, inverse, signed error; t=5 ms. Shared reference/inverse scales within each row.",
+    "F_vn_middle": "Rows x/y; columns modal reference, inverse, signed error; t=53 ms. Shared reference/inverse scales within each row.",
+    "F_vn_final": "Rows x/y; columns modal reference, inverse, signed error; t=100 ms. Shared reference/inverse scales within each row.",
+    "F_vs_initial": "Rows x/y; columns modal reference, inverse, signed error; t=5 ms. Shared reference/inverse scales within each row.",
+    "F_vs_middle": "Rows x/y; columns modal reference, inverse, signed error; t=53 ms. Shared reference/inverse scales within each row.",
+    "F_vs_final": "Rows x/y; columns modal reference, inverse, signed error; t=100 ms. Shared reference/inverse scales within each row.",
+    "F_time_error": "Errors against identical N40 K12 modal reference. Coarse-unprojected curve quantifies representation discrepancy, not inversion error.",
+    "F_probability": "Statewise PID-balanced scores and Rosenblatt 90% coverage. Fitting, selection and test particles are disjoint.",
+    "F_likelihood_ray": "Diagnostic-only initial-state line with full nonlinear PDE rollouts. No line value feeds checkpoint selection; reference initialization need not minimize misspecified likelihood.",
+    "F_initial_scatter": "Initial-field component comparison, vn left and vs right. Color encodes sample count, not probability density.",
+    "F_initial_spectrum": "Initial fluctuation energy in square Fourier shells; prescribed mean excluded.",
+    "F_training": "All-interval network training and validation objective; each curve is a fresh random initialization. Validation selects the checkpoint.",
+    "F_optimization": "Selected restart: full-batch fitting and disjoint-PID selection scores through all initial-control orders; not truth-based checkpoint selection."
+  },
+  "formats": [
+    "png",
+    "pdf",
+    "svg"
+  ],
+  "titles_embedded": false
+}

@@ -1,0 +1,63 @@
+{
+  "selected": {
+    "factor": 1.0,
+    "validation_nll": -0.41243669419986956,
+    "relative_to_uniform": [
+      0.22860169613308062,
+      0.40700540532081464
+    ],
+    "score": 0.40700540532081464,
+    "calibration_truth_only": true,
+    "initial_error": [
+      0.010295189716068444,
+      0.024060087094934374
+    ]
+  },
+  "candidates": [
+    {
+      "factor": 0.3,
+      "validation_nll": -0.3488953435800173,
+      "relative_to_uniform": [
+        0.2532292840400551,
+        0.426936097446905
+      ],
+      "score": 0.426936097446905,
+      "calibration_truth_only": true,
+      "initial_error": [
+        0.013246543726239787,
+        0.027229969024211664
+      ]
+    },
+    {
+      "factor": 1.0,
+      "validation_nll": -0.41243669419986956,
+      "relative_to_uniform": [
+        0.22860169613308062,
+        0.40700540532081464
+      ],
+      "score": 0.40700540532081464,
+      "calibration_truth_only": true,
+      "initial_error": [
+        0.010295189716068444,
+        0.024060087094934374
+      ]
+    },
+    {
+      "factor": 3.0,
+      "validation_nll": -0.346528198215576,
+      "relative_to_uniform": [
+        0.24526469485126334,
+        0.41767583443078204
+      ],
+      "score": 0.41767583443078204,
+      "calibration_truth_only": true,
+      "initial_error": [
+        0.010076229137347799,
+        0.02387573455550478
+      ]
+    }
+  ],
+  "criterion": "min worst-fluid RMS relative to uniform, calibration case only",
+  "note": "finite predeclared grid, not globally optimal parameters; targets never consulted",
+  "smoke": false
+}

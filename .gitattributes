@@ -4,3 +4,7 @@
 *.pt binary
 *.png binary
 *.pdf binary
+# Preserve the original returned artifact bytes, including JSON/figure hashes.
+/artifacts/fullwindow_4mm_20261026/** -text whitespace=cr-at-eol
+/artifacts/fullwindow_4mm_20261026/figures/*.svg binary
+/src/counterflow_full/resources/physics_4mm.json -text whitespace=cr-at-eol

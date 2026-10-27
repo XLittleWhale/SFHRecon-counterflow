@@ -1,0 +1,100 @@
+{
+  "config": {
+    "version": "full-window-20261026-v1",
+    "train": [
+      "vn0_0005m_s",
+      "vn0_001m_s",
+      "vn0_002m_s",
+      "vn0_0025m_s",
+      "vn0_003m_s",
+      "vn0_005m_s",
+      "vn0_0085m_s"
+    ],
+    "validation": "vn0_0065m_s",
+    "test": "vn0_004m_s",
+    "start": 5,
+    "end": 100,
+    "dt": 0.001,
+    "N": 40,
+    "K": 12,
+    "quadrature_grid": 64,
+    "training": {
+      "seeds": [
+        261026,
+        261027
+      ],
+      "epochs": 240,
+      "minimum_epochs": 60,
+      "patience": 30,
+      "batch": 1024,
+      "lr": 0.0003,
+      "weight_decay": 0.0001
+    },
+    "calibration": {
+      "steps": 160,
+      "batch": 512,
+      "degree": 12
+    },
+    "inversion": {
+      "orders": [
+        2,
+        4,
+        8,
+        12
+      ],
+      "steps": [
+        100,
+        160,
+        240,
+        600
+      ],
+      "lr": [
+        0.012,
+        0.006,
+        0.004,
+        0.002
+      ],
+      "minimum_steps": [
+        60,
+        90,
+        120,
+        200
+      ],
+      "patience_checks": 12,
+      "check_every": 10,
+      "batch": 256,
+      "degree": 12,
+      "eval_degree": 20,
+      "prior_grid": [
+        0.3,
+        1.0,
+        3.0
+      ],
+      "substeps": 2,
+      "observation_weight": 0.08,
+      "restarts": [
+        0,
+        1
+      ]
+    },
+    "selection": "6.5mm/s calibration chooses prior by worst normalized two-fluid full-window RMS; 4mm/s checkpoint/restart selection uses held-out PID NLL only",
+    "interpretation": "PID-balanced one-ms composite likelihood, not an exact independent-trajectory likelihood; no posterior uncertainty claim"
+  },
+  "smoke": false,
+  "package_manifest_sha": "25d1f69576cb7cbe87cd610599a9124361011c400ff39300a9570bc5528138c6",
+  "source_hashes": {
+    "counterflow_full/train.py": "e810b14ea3f0512ffe2442a0ebdc82e07f2fd083f978484000b67e148ab6d6a4",
+    "counterflow_full/run.py": "adf7303b15f31f04e6b941e65577e8522f79085cc4027bb5b97331c9d0aabee2",
+    "counterflow_full/build.py": "8bbd129013f9d5342379728a464ca45a933380114491368bd2040e4a4bfca6bf",
+    "counterflow_full/prepare.py": "e7580366690224c8ed96fb21681cd8712ff603fe3c52549a112703e383b6a452",
+    "counterflow_full/inverse.py": "7fc06b226bd7f9a7ff5aac59a17991f96b8d25c8cebe51e9e577bc1c5b497ab0",
+    "counterflow_full/evaluate.py": "508e100b253541a9521f497b37a000a50a84dc7cd7d7ff4ee26f6418cf391c69",
+    "counterflow_full/__init__.py": "745e14035543d52e4e48d38e6f5cdec8bbce936e3f06e204772aee2e971bf1c8",
+    "counterflow_full/core.py": "8af84b1ba48b9ee03ee9a4ad4b5c36dea93862ae6f73b1730572779504ad7eb6",
+    "counterflow/observation.py": "33488505840f10845fb77a69b5557195fb798ef4726ab00674e5746ae52a5b54",
+    "counterflow/io.py": "06ecd59e7591cbdfe3615668d4fdb434e470169641f2c45af8011250600abbc9",
+    "counterflow/dynamics.py": "f9a1711d5c4ce2499c61d0ab2b61da2ed5820d9a9419cdaefa6d17b0d52b910a",
+    "counterflow/vtk.py": "1f64370b6219890b31b1f7be41b8ed0fd63d126253c9300f4264a9e67462ea9b",
+    "counterflow/__init__.py": "bb9fdcdd8edb4023920bb169236527b86a4a0aae447f927061c358a87ef91bb1"
+  }
+}

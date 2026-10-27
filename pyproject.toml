@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "counterflow-reconstruction"
-version = "1.0.0"
+version = "1.1.0"
 description = "Probabilistic particle observations and initial-state two-fluid reconstruction"
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.24", "scipy>=1.10", "torch>=2.2", "matplotlib>=3.7", "h5py>=3.9"]
@@ -17,6 +17,9 @@ counterflow = "counterflow.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+counterflow_full = ["*.json", "*.md", "assets/*.md", "assets/*.txt", "assets/*.py", "resources/*.json", "resources/*.pt"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

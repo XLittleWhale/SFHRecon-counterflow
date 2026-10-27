@@ -1,0 +1,12 @@
+{
+  "version": "full-window-20261026-v1",
+  "train": ["vn0_0005m_s", "vn0_001m_s", "vn0_002m_s", "vn0_0025m_s", "vn0_003m_s", "vn0_005m_s", "vn0_0085m_s"],
+  "validation": "vn0_0065m_s",
+  "test": "vn0_004m_s",
+  "start": 5, "end": 100, "dt": 0.001, "N": 40, "K": 12, "quadrature_grid": 64,
+  "training": {"seeds": [261026, 261027], "epochs": 240, "minimum_epochs": 60, "patience": 30, "batch": 1024, "lr": 0.0003, "weight_decay": 0.0001},
+  "calibration": {"steps": 160, "batch": 512, "degree": 12},
+  "inversion": {"orders": [2, 4, 8, 12], "steps": [100, 160, 240, 600], "lr": [0.012, 0.006, 0.004, 0.002], "minimum_steps": [60, 90, 120, 200], "patience_checks": 12, "check_every": 10, "batch": 256, "degree": 12, "eval_degree": 20, "prior_grid": [0.3, 1.0, 3.0], "substeps": 2, "observation_weight": 0.08, "restarts": [0, 1]},
+  "selection": "6.5mm/s calibration chooses prior by worst normalized two-fluid full-window RMS; 4mm/s checkpoint/restart selection uses held-out PID NLL only",
+  "interpretation": "PID-balanced one-ms composite likelihood, not an exact independent-trajectory likelihood; no posterior uncertainty claim"
+}

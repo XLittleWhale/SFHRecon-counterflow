@@ -63,7 +63,9 @@ def mixture_nll(pred,lw,target,sigma):
     return -torch.logsumexp((lw-.5*((target[:,None,None]-pred)/sigma).square().sum(-1)-math.log(2*math.pi*sigma**2)).flatten(1),-1)
 
 def local(z,a):
-    k=z['frame'];mid=(a[k]+a[k+1])/2;diff=(a[k+1]-a[k])/DT
+    k=z['frame'];fraction=z.get('time_fraction',.5)
+    if torch.is_tensor(fraction):fraction=fraction[:,None,None]
+    mid=(1-fraction)*a[k]+fraction*a[k+1];diff=(a[k+1]-a[k])/DT
     v=z['v0']+torch.einsum('pfm,pfmj->pfj',mid,z['V'])
     g=z['g0']+torch.einsum('pfm,pfmij->pfij',mid,z['G'])
     acc=torch.einsum('pfm,pfmj->pfj',diff,z['V'])+torch.einsum('pfij,pfi->pfj',g,v)

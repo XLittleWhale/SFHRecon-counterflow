@@ -1,5 +1,10 @@
 # 固定的统一方法
 
+> 2026-10-27：模拟训练与重建的当前正式入口是
+> [FullWindow 基线](FULLWINDOW_BASELINE.md)，完整方程见
+> [数学契约](../src/counterflow_full/MATHEMATICS.md)。下文保留历史统一/CF 方法，
+> 不是新模拟基线的目标函数，尤其不能混用随机截距似然与新分状态受力误差复合似然。
+
 设历史二维轨迹特征为 \(H\)，候选场局部特征为 \(c(v_n,v_s,\nabla v_n,\nabla v_s)\)。GRU 编码历史，网络给出
 
 \[
