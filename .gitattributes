@@ -8,3 +8,7 @@
 /artifacts/fullwindow_4mm_20261026/** -text whitespace=cr-at-eol
 /artifacts/fullwindow_4mm_20261026/figures/*.svg binary
 /src/counterflow_full/resources/physics_4mm.json -text whitespace=cr-at-eol
+# Frozen protocols hash experiment source and fixture bytes, not normalized text.
+/experiments/** -text whitespace=cr-at-eol
+# The archived CF baseline includes a terminal blank line.
+/experiments/pinn_cf_20261105/cf_history.py whitespace=cr-at-eol,-blank-at-eof

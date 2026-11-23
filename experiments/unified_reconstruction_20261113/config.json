@@ -1,0 +1,59 @@
+{
+  "version": "unified-baseline-full-v2-20261113",
+  "profile": "baseline_retrain_all",
+  "scope": "each",
+  "cases": [
+    113,
+    175,
+    217
+  ],
+  "field_seeds": [
+    301030,
+    301031,
+    301032
+  ],
+  "probability_seeds": [
+    411040,
+    411041,
+    411042
+  ],
+  "initialization": "periodic_selected_joint",
+  "reference_policy": "reuse_existing",
+  "data_role": "same_realization_supervised_calibration",
+  "independent_field_generalization": false,
+  "same_realization_field_truth_enters_joint": true,
+  "evaluation_truth_used_for_selection": false,
+  "roles": {
+    "F": "pid%5==2",
+    "I": "pid%5>=3",
+    "V": "pid%5==1",
+    "H": "pid%5==0",
+    "inner": "within F/V: (pid//5)%2==0",
+    "outer": "within F/V: (pid//5)%2==1"
+  },
+  "stages": {
+    "A": "retrain",
+    "B": "retrain",
+    "closure": "retrain",
+    "joint": "retrain"
+  },
+  "field": {
+    "budgets": [
+      200,
+      600
+    ],
+    "lr": 0.001,
+    "validate_every": 10,
+    "train_degree": 12,
+    "validation_degree": 20,
+    "guard": 0.01,
+    "selection_min_delta": 1e-06,
+    "likelihood_weight": 0.08,
+    "gradient_clip": 5.0,
+    "learned_closure_in_pinn": false
+  },
+  "time_adapter": "boundary_clock_v2: (1-f)I+fK, sign-conditional Gaussian moments; one real endpoint",
+  "window_rule": "max(5ms,2 native intervals)",
+  "inner_time_preconditioner": "inner_lr * min(1,5ms/window_duration)^2; shared by all geometries",
+  "diagnostic_only": false
+}

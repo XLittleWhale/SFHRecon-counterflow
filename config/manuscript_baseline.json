@@ -1,0 +1,408 @@
+{
+  "schema": 1,
+  "id": "manuscript_20261122",
+  "paper": "01_Documentation/manuscript/counterflow_reconstruction",
+  "cases": [
+    {
+      "case": "periodic_1p5",
+      "selected_steps": [
+        600,
+        600,
+        550
+      ],
+      "vector_rmse_mm_s": [
+        0.1955095219536796,
+        0.33822363586523424
+      ],
+      "H_nll_per_ms": [
+        -2.80393614234011,
+        -2.094651942339858
+      ],
+      "saved_frames": 96,
+      "sample_dt_ms": 1.0,
+      "pinn_budget": 600,
+      "geometry": "periodic",
+      "data_role": "bandwidth_matched_periodic_simulation"
+    },
+    {
+      "case": "periodic_4p0",
+      "selected_steps": [
+        530,
+        540,
+        510
+      ],
+      "vector_rmse_mm_s": [
+        0.5807002380889927,
+        0.8094721173761827
+      ],
+      "H_nll_per_ms": [
+        -2.357801555107379,
+        -1.6675116177529232
+      ],
+      "saved_frames": 96,
+      "sample_dt_ms": 1.0,
+      "pinn_budget": 600,
+      "geometry": "periodic",
+      "data_role": "bandwidth_matched_periodic_simulation"
+    },
+    {
+      "case": "cf217",
+      "selected_steps": [
+        60,
+        70,
+        60
+      ],
+      "vector_rmse_mm_s": [
+        2.5535200111452236,
+        3.476544629664861
+      ],
+      "H_nll_per_ms": [
+        4.369317821688377,
+        0.8567821873900733
+      ],
+      "saved_frames": 49,
+      "sample_dt_ms": 5.555555555555557,
+      "pinn_budget": 200,
+      "geometry": "wall_channel",
+      "data_role": "same_realization_supervised_calibration"
+    }
+  ],
+  "protocol_fingerprints": {
+    "periodic": "44f9d65161bd5a7835aebf72465cff542a8e067e35765f73949c40db334625d4",
+    "cf217": "022f6863c143a9e243d42fcc7eb5ee682e65593048022ea744d2e63ef18d2752"
+  },
+  "workspace_files": {
+    "01_Documentation/manuscript/counterflow_reconstruction/appendices/appendix-a.tex": {
+      "role": "manuscript_source",
+      "sha256": "ddc5b3baeda55dce1584c6ba84e7d6f60a229476a6e4f9225d6b88a4ee1bfa30"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/appendices/appendix-b.tex": {
+      "role": "manuscript_source",
+      "sha256": "8f4ffd386c27a9fcb52336ce5aca7d64d6d3ae5026271efbccd8a5787a7b32c2"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/appendices/appendix-c.tex": {
+      "role": "manuscript_source",
+      "sha256": "30bda2084ef9541b7c442411dbb369d8dac7fd3afbdaa46467bc7400beedff1a"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/backmatter/acknowledgments.tex": {
+      "role": "manuscript_source",
+      "sha256": "857c0f4bbd5d87ee2cf603fb02ad752d70db2e114c973e3fb6c639ceb7669e50"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/config/macros.tex": {
+      "role": "manuscript_source",
+      "sha256": "431915f4f039a38dfe072e58945c41989354ef3cbdb2b4598c77b3d82654d392"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/config/preamble.tex": {
+      "role": "manuscript_source",
+      "sha256": "95a1b27358866362eccacbd725e6ebe2102c6809ced28923c683696ae9603861"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/figures/reconstruction-workflow.tex": {
+      "role": "manuscript_source",
+      "sha256": "5123541418fb2e73b3777eac46b70e6ac0ced7106e5ad7c923b18c554d53f420"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/frontmatter/abstract.tex": {
+      "role": "manuscript_source",
+      "sha256": "a57f8118b56acc529828a5208bf60a6c232435212abe56a3a19b64873560324f"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/frontmatter/metadata.tex": {
+      "role": "manuscript_source",
+      "sha256": "43ed8259a4b7347b69cadf75cfd98a1f3a8b6dbc265886e2ec7dad079ab0c3ac"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/main.tex": {
+      "role": "manuscript_source",
+      "sha256": "cc3766921da2952576f6f6ea19bfeb93c39874e34718dadf3d2659080f36606d"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/references.bib": {
+      "role": "manuscript_source",
+      "sha256": "56711df6c8a69d64fab6e168184b7aee95b0ada8122112a2885abac0cd52a93a"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/result_figures/cf217_fields.pdf": {
+      "role": "manuscript_figure_and_metrics",
+      "sha256": "77efd066d818d374c07f70fa9ef0953ee833f356f549a4bd7f4fb67624521ca1"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/result_figures/cf217_mean_profile.pdf": {
+      "role": "manuscript_figure_and_metrics",
+      "sha256": "e509bc91faea98fd5fd11c24c17c80594cf9c08355dc14950c72e596d3dc2b67"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/result_figures/cf217_spectra.pdf": {
+      "role": "manuscript_figure_and_metrics",
+      "sha256": "6d05e37d9b899a9c1fb10e421505f857f61c1fc8b476bbec5bae2d4455c68c22"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/result_figures/make_summary.py": {
+      "role": "manuscript_figure_and_metrics",
+      "sha256": "508afbd5959ff194016c7d9c23c8382cf042a7417dfd19b8f1225917b19877f5"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/result_figures/metrics.json": {
+      "role": "manuscript_figure_and_metrics",
+      "sha256": "61e146a3856d9e2a92f3be455674e0267ab0ee57dd375f31113f9aa024688e6f"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/result_figures/performance_table.tex": {
+      "role": "manuscript_source",
+      "sha256": "12276ba87bffe5f3b14b7d7f0a618fbcd3209dbb880e2810704df17bdd9f0c9d"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/result_figures/periodic_1p5_fields.pdf": {
+      "role": "manuscript_figure_and_metrics",
+      "sha256": "6b8b8939b0168c033d12b0737163922dce60b9a47e6a23af548549debc4618f8"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/result_figures/periodic_1p5_spectra.pdf": {
+      "role": "manuscript_figure_and_metrics",
+      "sha256": "2d09545b5d5eb47e52ef0e245941ed54036f4b84f144508d2c5bafc8d39d2857"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/result_figures/periodic_4p0_fields.pdf": {
+      "role": "manuscript_figure_and_metrics",
+      "sha256": "4286e1c2bea8c8d81b3ef3a1d62a0090ad0d5232fdfc2aa4a3df8f88315db544"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/result_figures/periodic_4p0_spectra.pdf": {
+      "role": "manuscript_figure_and_metrics",
+      "sha256": "5e407c6d37446a3bbd731fa4c47bed17f1be16a270ab55fb5aac1287246b2f70"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/result_figures/reference_cases_table.tex": {
+      "role": "manuscript_source",
+      "sha256": "e9136460d965f0b8495b93fb98187ed175b36a17fda2f914226ba82aabbc3b44"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/result_figures/tables.tex": {
+      "role": "manuscript_source",
+      "sha256": "7adf06d7a10a68f0b2f467497a557ccacfff9b1ecbd28badc4b60aaf25cf08a5"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/sections/01-introduction.tex": {
+      "role": "manuscript_source",
+      "sha256": "5cd13eed2afc88a8a56901081e3c81061c3fff2f79e22bc52e769f6300e8585a"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/sections/02-theory.tex": {
+      "role": "manuscript_source",
+      "sha256": "15b8403f4d2985ab224f96a7ae7afe6cc5f1e567a36525901273ce882fa19c87"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/sections/03-methods.tex": {
+      "role": "manuscript_source",
+      "sha256": "56d56bcc8445675ec74ab477dd2de1f0f3e248e354c4b852389a930f937a8929"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/sections/04-results.tex": {
+      "role": "manuscript_source",
+      "sha256": "c949da1c0562bf56a10e8c29a693504fae248b58f625adb1d098a8bf045caaee"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/sections/05-discussion.tex": {
+      "role": "manuscript_source",
+      "sha256": "a6f65b4fa7577e1c54649ae04644332c07e37cd54424d7b3bb5b6e0b75f95b4a"
+    },
+    "01_Documentation/manuscript/counterflow_reconstruction/sections/06-conclusion.tex": {
+      "role": "manuscript_source",
+      "sha256": "11f4987ae35cfbd4127af056c89928075701633c1cb70579ec414291eff7694e"
+    },
+    "02_Data_Generation/datasets/cf/trajectories_2k/cf_2K_Q217/configuration.json": {
+      "role": "publication_simulation_origin",
+      "sha256": "2202cce99c932f2a388751041eeb71488047e7c6afc140975c742310a613e319"
+    },
+    "02_Data_Generation/datasets/cf/trajectories_2k/cf_2K_Q217/particles/frame_manifest.json": {
+      "role": "publication_simulation_origin",
+      "sha256": "2f0a2e9e70ba22abf5e64dca80c517c95f3f59ac713fbd813530413df1f18518"
+    },
+    "02_Data_Generation/datasets/cf/trajectories_2k/cf_2K_Q217/particles/metadata.json": {
+      "role": "publication_simulation_origin",
+      "sha256": "89d96e0131fe76d1a078148925f92bdc0d04128e4ef1aacb1c67b061d14a55e2"
+    },
+    "02_Data_Generation/datasets/periodic/trajectories/vn0_0015m_s/metadata.json": {
+      "role": "publication_simulation_origin",
+      "sha256": "9dc45e18364362f5c8482f4c7aa4e1a732f0fc2d6cdd67ba59ecde201e050067"
+    },
+    "02_Data_Generation/datasets/periodic/trajectories/vn0_004m_s/metadata.json": {
+      "role": "publication_simulation_origin",
+      "sha256": "e9a6e0263f7e9b909a8608784115de7c3ee3f0dd0e302fe295f32ff122f8183f"
+    },
+    "02_Data_Generation/run.py": {
+      "role": "workspace_entry_point",
+      "sha256": "3f5260c8ffe07b83639965b070b09dee42a11308d1797a39939a747942b78343"
+    },
+    "02_Data_Generation/source/analyze_particle_state_kinematics.py": {
+      "role": "forward_solver_source",
+      "sha256": "c16bcae44c2dc7ae0d1df8e17e358a54c48d6f9ca92d315ddcaf9444fbb46b9b"
+    },
+    "02_Data_Generation/source/build_cf_reference_package.py": {
+      "role": "forward_solver_source",
+      "sha256": "bf601017ba9341649b040622265161f2e15f807e961cc8123a4a3545438724f6"
+    },
+    "02_Data_Generation/source/cf_reference_flow.py": {
+      "role": "forward_solver_source",
+      "sha256": "2cf20bd8b75e67a5555daa09d87f6c0b1e1f9c7865148e27d675da35bcf6f683"
+    },
+    "02_Data_Generation/source/cf_reference_particles.py": {
+      "role": "forward_solver_source",
+      "sha256": "9636449068ff5d0544c37a3034001b6cc6b8f88eeab5d70da70d8830b8047a20"
+    },
+    "02_Data_Generation/source/compare_cf_velocity_scaling.py": {
+      "role": "forward_solver_source",
+      "sha256": "e6564ed9c5186625e554c93e7e1696781c44e3493906717404a777351b473313"
+    },
+    "02_Data_Generation/source/cuda_bound_particles.py": {
+      "role": "forward_solver_source",
+      "sha256": "8640faafbef1c852b1ccc514ee8b1563cafea3bea3d0543d2975436b9213e757"
+    },
+    "02_Data_Generation/source/cuda_flow.py": {
+      "role": "forward_solver_source",
+      "sha256": "694a7cf97523d0bea3db9392ffbeb478d684e0965cfeae81426be8e50ae93cbc"
+    },
+    "02_Data_Generation/source/cuda_local_filament_particles.py": {
+      "role": "forward_solver_source",
+      "sha256": "14242d25980397f086871865aad63900716af79e113b0baba22578778a930433"
+    },
+    "02_Data_Generation/source/cuda_particles.py": {
+      "role": "forward_solver_source",
+      "sha256": "6157c19d955178eb6a953c5566893203636dca10c92c50b1a70f50a156ee2db7"
+    },
+    "02_Data_Generation/source/cuda_tethered_particles.py": {
+      "role": "forward_solver_source",
+      "sha256": "9b68a6026e809d00f119e3a4d09955bb692f1a4fbdc3d775358c2377f08a9751"
+    },
+    "02_Data_Generation/source/helium_properties.py": {
+      "role": "forward_solver_source",
+      "sha256": "809db0cc645f132f1e2402d8e1aff161a08eba01d271dfd28a32e9186f660c98"
+    },
+    "02_Data_Generation/source/large_workflow.py": {
+      "role": "forward_solver_source",
+      "sha256": "be01a6a70375909b65a8907253b8f3ee3e7c78c9e9c5ea40b496c2f5f16062e0"
+    },
+    "02_Data_Generation/source/macro_friction.py": {
+      "role": "forward_solver_source",
+      "sha256": "984376b006e774b579bbed740de92acd71addf76a954ae2d65fbc47f400a0588"
+    },
+    "02_Data_Generation/source/main_large_particles_vortex_tethered_inertial.py": {
+      "role": "forward_solver_source",
+      "sha256": "98ee2a0a09afb12f9ea76bf560103527c17531ad4f3481e19dd15035dc3d6396"
+    },
+    "02_Data_Generation/source/main_large_steady.py": {
+      "role": "forward_solver_source",
+      "sha256": "58c619864b23c2f49d52478d2bbe4333674681b0866852b228d2b276d4af82fe"
+    },
+    "02_Data_Generation/source/plot_tethered_inertial_cf_velocity_scaling.py": {
+      "role": "forward_solver_source",
+      "sha256": "e68bdcbd4eb51d7263821c59a299a790b42b542cfb949cd4c42d5c91e1496dd4"
+    },
+    "02_Data_Generation/source/preflight_cf_reference.py": {
+      "role": "forward_solver_source",
+      "sha256": "8d5b5f594f16e568c951c4c923d94fc464d7c605323cc720e23f2f87fb49d83e"
+    },
+    "02_Data_Generation/source/run_cf_reference_cuda.py": {
+      "role": "forward_solver_source",
+      "sha256": "a7e49985130ae3376ce2d01f909a6a21bc05de3bf7b16e50ff36b1191b1f3165"
+    },
+    "02_Data_Generation/source/run_periodic_cuda.py": {
+      "role": "forward_solver_source",
+      "sha256": "e1c1cea348cc607c1f6e04028b351022ffe9d03e05ae7b81d54d637d76be151d"
+    },
+    "02_Data_Generation/source/solver.py": {
+      "role": "forward_solver_source",
+      "sha256": "c4cc6cad8cd55ee64e3d50131c9763821716fd1f2b585402a6d3e2fecba90682"
+    },
+    "02_Data_Generation/source/validate.py": {
+      "role": "forward_solver_source",
+      "sha256": "f0e7612929143ab73f6ceb3df88679151345f13e5acf4ce6bfa54da8736daff4"
+    },
+    "02_Data_Generation/source/vtkhdf_io.py": {
+      "role": "forward_solver_source",
+      "sha256": "697458ecb336d1a20ddee690790023fac2dd33456bebf5a23d6511f2385b6020"
+    },
+    "03_Particle_Observation_Model/run.py": {
+      "role": "workspace_entry_point",
+      "sha256": "2805c15afe5c5771b96e87cced1c16d35472f20d9826ba46eb46100fd9782f54"
+    },
+    "03_Particle_Observation_Model/trained_models/periodic_baseline/models/seed_411040.pt": {
+      "role": "publication_frozen_probability",
+      "sha256": "9962a81b8a0fd6708732415b3c17d62225db8f86c50299c994d482b459fb4a63"
+    },
+    "03_Particle_Observation_Model/trained_models/periodic_baseline/models/seed_411041.pt": {
+      "role": "publication_frozen_probability",
+      "sha256": "eb08f3f1f2a2d95350fd725403a73c15c2330fe06be4c9cbc8943807612cd342"
+    },
+    "03_Particle_Observation_Model/trained_models/periodic_baseline/models/seed_411042.pt": {
+      "role": "publication_frozen_probability",
+      "sha256": "da39909d765652c6f07839fbfd65ebd61dfc95e7809e4f5f19f5a42e92d80701"
+    },
+    "03_Particle_Observation_Model/trained_models/periodic_baseline/selection_frozen.json": {
+      "role": "publication_frozen_probability",
+      "sha256": "7a5dbf66d8ea7551b9c75b983dde2d9a4998515fecdae0537558074be47d768e"
+    },
+    "04_PINN_Reconstruction/dependencies/build_inputs/cf217_build/cce98ee5/package/bundle_manifest.json": {
+      "role": "execution_release_manifest",
+      "sha256": "63ba78e81d53db40b8e254cfee2b8c6fe908e1ecb24fdcfbeb3138c5e80c1c94"
+    },
+    "04_PINN_Reconstruction/dependencies/build_inputs/unified_cf/stage/a19a8aeb/UnifiedCF_FullBaseline_GPU_20261113/bundle_manifest.json": {
+      "role": "execution_release_manifest",
+      "sha256": "eb922f25b3238851a0b48def60d6710c9b3f28a95e30f4deb166f8a268680385"
+    },
+    "04_PINN_Reconstruction/dependencies/releases/unified_cf/assessment_cf217_calibrated_20261115/metrics.json": {
+      "role": "publication_channel_gate",
+      "sha256": "bbb5b9d69ef2f72ee3bb293497d780e474210b4a2f4b7102d62db81c56f7ba68"
+    },
+    "04_PINN_Reconstruction/dependencies/releases/unified_cf/local_validation_q217_20261114/final_acceptance.json": {
+      "role": "publication_channel_gate",
+      "sha256": "d145382471cd9df25b0e66fad036e04eeea3aec63c4726a450650112af9318eb"
+    },
+    "04_PINN_Reconstruction/packages/sfhflow_cf_q217_calibrated_cuda.zip": {
+      "role": "execution_release_manifest",
+      "sha256": "4fecfc5353c6cbb599803aa5b3dd4676211f6e9ef8df9c2e623558837a94576a"
+    },
+    "04_PINN_Reconstruction/results/cf_q217_calibrated/complete.json": {
+      "role": "publication_channel_gate",
+      "sha256": "80cdf13544eee05a23d818f58feef3bfb80b9912785c0046d7ed851fcf2ccf78"
+    },
+    "04_PINN_Reconstruction/results/cf_q217_calibrated/datasets/cf_2K_Q217/reference_evaluation.npz": {
+      "role": "publication_channel_fields",
+      "sha256": "8bc437e2afa626783ead47e2d3fdcb330ed53704828ab895bbdde1b2be9f9580"
+    },
+    "04_PINN_Reconstruction/results/cf_q217_calibrated/evaluation/cf_2K_Q217/seed_301030/budget_200_primary.npz": {
+      "role": "publication_channel_fields",
+      "sha256": "d3d1e746a0612c0ec1718188f714ca8f12996e3a242087f211c3b0c8dd70ba6a"
+    },
+    "04_PINN_Reconstruction/results/cf_q217_calibrated/evaluation/summary.json": {
+      "role": "publication_channel_gate",
+      "sha256": "360d78b838e0583b73b35a4108357263604d018467d0e58c553ab298533601da"
+    },
+    "04_PINN_Reconstruction/results/cf_q217_calibrated/field_selection_frozen.json": {
+      "role": "publication_channel_gate",
+      "sha256": "675605b27d4af43b7841554bad6eeafb49dacbcdbf77042c1a628d21c9b2e41b"
+    },
+    "04_PINN_Reconstruction/results/cf_q217_calibrated/probability_frozen.json": {
+      "role": "publication_frozen_probability",
+      "sha256": "e9c7137a4195f58d9dc8f613529f90aef6977ed8ade9c5a15c5d56b51d6f97d8"
+    },
+    "04_PINN_Reconstruction/results/cf_q217_calibrated/protocol.json": {
+      "role": "publication_channel_gate",
+      "sha256": "1b868c7b785eadeda2dd2a5d22e96c5af6e74f44d87da6693b1c4676baa2dc07"
+    },
+    "04_PINN_Reconstruction/results/periodic_baseline/FIELD_MANIFEST.json": {
+      "role": "publication_periodic_gate",
+      "sha256": "9e9b6c235b16929fc813afe6276a877a9196de22646d0a2c57f5e966386955c3"
+    },
+    "04_PINN_Reconstruction/results/periodic_baseline/fields/600/primary/vn0_0015m_s/pinn_seed_301030.npz": {
+      "role": "publication_periodic_fields",
+      "sha256": "6fc96f674f2e93aca860bba6c40ebb7a29b9c643c3b1a2afc79ef694043bab1f"
+    },
+    "04_PINN_Reconstruction/results/periodic_baseline/fields/600/primary/vn0_004m_s/pinn_seed_301030.npz": {
+      "role": "publication_periodic_fields",
+      "sha256": "886d6c2234bb66995e812079990f5f7d0b9b9573a70d1d757c9a6bdab8fffd9a"
+    },
+    "04_PINN_Reconstruction/results/periodic_baseline/fields/vn0_0015m_s/reference_K12.npz": {
+      "role": "publication_periodic_fields",
+      "sha256": "8e9f7a70cf44737d585b60d6d690b7ec5ef7ef956de1df222dc0eb26cd669665"
+    },
+    "04_PINN_Reconstruction/results/periodic_baseline/fields/vn0_004m_s/reference_K12.npz": {
+      "role": "publication_periodic_fields",
+      "sha256": "ada6b9a73abd114088da862d76c320c97ea8e61076e4ce3990dc62aea8f9e3f6"
+    },
+    "04_PINN_Reconstruction/results/periodic_baseline/protocol.json": {
+      "role": "publication_periodic_gate",
+      "sha256": "04168414f9dd1d4d944ebee25b6f4b76dca9354f77225aefacaed402a5b8577c"
+    },
+    "04_PINN_Reconstruction/results/periodic_baseline/selection_frozen.json": {
+      "role": "publication_periodic_gate",
+      "sha256": "7987c1f4f0405bd9d67c9ef48df989752965e7b1a7e829a4838a1e67d8699111"
+    },
+    "04_PINN_Reconstruction/results/periodic_baseline/tables/individual_runs.json": {
+      "role": "publication_periodic_gate",
+      "sha256": "57a0aab637781bbc296b18eafc08866a9944af61fb106daac9e3bca9c2b8e3d2"
+    },
+    "04_PINN_Reconstruction/run.py": {
+      "role": "workspace_entry_point",
+      "sha256": "1bfda3ef44f70c8840276fb4d62df7028dcaa1d3a4d32d83669a7e03c7c37e8d"
+    }
+  }
+}

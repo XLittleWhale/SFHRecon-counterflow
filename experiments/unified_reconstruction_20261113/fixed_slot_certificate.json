@@ -1,0 +1,24 @@
+{
+  "version": "cf-channel-galantucci-transient1s-50frames-v3",
+  "implementation_sha256": {
+    "run_cf_reference_cuda.py": "e6111e6cae7e545569f897d5a0771169816aa7a95783bf10497365f3b2fb4b2c",
+    "cf_reference_flow.py": "f6ce0da73423803893bf2ae1566b4f65bb9a8f69e5bf854efa135447291d2451",
+    "cf_reference_particles.py": "9636449068ff5d0544c37a3034001b6cc6b8f88eeab5d70da70d8830b8047a20",
+    "solver.py": "c4cc6cad8cd55ee64e3d50131c9763821716fd1f2b585402a6d3e2fecba90682",
+    "helium_properties.py": "809db0cc645f132f1e2402d8e1aff161a08eba01d271dfd28a32e9186f660c98",
+    "cuda_flow.py": "694a7cf97523d0bea3db9392ffbeb478d684e0965cfeae81426be8e50ae93cbc",
+    "cuda_particles.py": "6157c19d955178eb6a953c5566893203636dca10c92c50b1a70f50a156ee2db7",
+    "cuda_bound_particles.py": "8640faafbef1c852b1ccc514ee8b1563cafea3bea3d0543d2975436b9213e757",
+    "cuda_tethered_particles.py": "9b68a6026e809d00f119e3a4d09955bb692f1a4fbdc3d775358c2377f08a9751"
+  },
+  "proof": "ChannelFlow.step/reconnect/_reseed preserve array length and slot circulation; particle operations move/rebind indices only. Constructor/load_checkpoint are the only sign writers.",
+  "proof_functions": [
+    "ChannelFlow.step",
+    "ChannelFlow._reseed",
+    "ChannelFlow._remove_at_wall",
+    "ChannelFlow.reconnect",
+    "ChannelInertialTetheredParticles.reconcile_and_capture"
+  ],
+  "source_sign_table": "particle_start_state.npz; no final-checkpoint inference",
+  "periodic_index_parity_assumed": false
+}
