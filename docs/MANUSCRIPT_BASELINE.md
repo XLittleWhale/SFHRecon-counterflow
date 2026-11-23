@@ -7,6 +7,8 @@ trajectories, observations, model checkpoints, evaluation grids and deployment
 archives remain in their numbered workspace blocks. The
 [baseline manifest](../config/manuscript_baseline.json) records their locations
 relative to SFHFlow and their SHA-256 values.
+The [published results](../results/manuscript_20261122/) provide the manuscript's
+figures, tables and numerical metrics without the large input and checkpoint files.
 
 | Case | Probability model used in inversion | Fields used for the manuscript |
 | --- | --- | --- |

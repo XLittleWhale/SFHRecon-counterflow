@@ -1,0 +1,14 @@
+\begin{table}[tbp]
+\centering
+\caption{Simulation performance averaged over three paired seeds after validation-based checkpoint selection. \(H\) is the held-out particle set. Scores are negative log likelihood per millisecond for dimensionless displacements. Field errors are vector RMS in \(\mathrm{mm\,s^{-1}}\) against the corresponding evaluation reference.}
+\label{tab:latest-simulation-performance}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Case & $H$ NLL, free & $H$ NLL, captured & RMSE $v_n$ & RMSE $v_s$ \\
+\midrule
+Periodic $U=1.5$ & -2.804 & -2.095 & 0.196 & 0.338 \\
+Periodic $U=4.0$ & -2.358 & -1.668 & 0.581 & 0.809 \\
+CF217 & 4.369 & 0.857 & 2.554 & 3.477 \\
+\bottomrule
+\end{tabular}
+\end{table}

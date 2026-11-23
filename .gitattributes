@@ -12,3 +12,5 @@
 /experiments/** -text whitespace=cr-at-eol
 # The archived CF baseline includes a terminal blank line.
 /experiments/pinn_cf_20261105/cf_history.py whitespace=cr-at-eol,-blank-at-eof
+# Published plots, tables and metrics match the manuscript artifact hashes.
+/results/** -text whitespace=cr-at-eol
